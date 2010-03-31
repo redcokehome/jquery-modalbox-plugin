@@ -1,6 +1,6 @@
 /*
 	Description	: basic styles for jQuery Plugin "modalBox". feel free to customize this styles
-	Version		: 1.0.0
+	Version		: trunk
 	Author		: Steffen Hollstein
 	Author URI	: http://www.steffenhollstein.de
 	Project Page: http://code.google.com/p/jquery-modalbox-plugin/
@@ -101,13 +101,13 @@ div#modalBox {
 	width:600px; /* default wide */
 }
 div#modalBox.small {
-	width:300px;
-}
-div#modalBox.middle {
 	width:400px;
 }
-div#modalBox.wide {
-	width:800px;
+div#modalBox.medium {
+	width:500px;
+}
+div#modalBox.large {
+	width:700px;
 }
 div#modalBox div#modalBoxBody {
 	position:relative;
