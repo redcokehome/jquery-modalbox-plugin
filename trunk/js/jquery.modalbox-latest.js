@@ -535,7 +535,7 @@
 					if( jQuery(globaloptions.setModalboxContainer).size() == 0 ){
 						showFaderLayer();
 					} else {
-						closeModalBox({
+						jQuery.fn.modalBox.close({
 							layerContainer		: globaloptions.setFaderLayer,
 							setModalboxContainer: globaloptions.setModalboxContainer
 						});
