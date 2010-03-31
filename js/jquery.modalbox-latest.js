@@ -1,5 +1,5 @@
 /*
-* jQuery modalBox plugin v1.0.1 <http://code.google.com/p/jquery-modalbox-plugin/> 
+* jQuery modalBox plugin (trunk) <http://code.google.com/p/jquery-modalbox-plugin/> 
 * @requires jQuery v1.2.6 or later 
 * is released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
 */
@@ -514,11 +514,11 @@
 					
 					
 					if( settings.element ){
-						if( jQuery(settings.element).hasClass("wideStyle") ){
-							var setModalboxClassName = "wide";
-						} else if( jQuery(settings.element).hasClass("middleStyle") ){
-							var setModalboxClassName = "middle";
-						} else if( jQuery(settings.element).hasClass("smallStyle") ){
+						if( jQuery(settings.element).hasClass("large") ){
+							var setModalboxClassName = "large";
+						} else if( jQuery(settings.element).hasClass("medium") ){
+							var setModalboxClassName = "medium";
+						} else if( jQuery(settings.element).hasClass("small") ){
 							var setModalboxClassName = "small";
 						} else if( settings.loadImagePreparer["nameOfImagePreloaderContainer"] ){
 							var setModalboxClassName = "auto";
