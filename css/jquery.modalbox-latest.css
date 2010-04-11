@@ -133,6 +133,7 @@ div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox span {
 	float:right;
 	text-decoration:none;
 	color:#000;
+	cursor:pointer;
 }
 div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox {
 	background:transparent url(../img/closebutton_21x21.png) right center no-repeat;
