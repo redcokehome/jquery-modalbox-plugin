@@ -105,7 +105,7 @@
 				white			: 'background-color:#fff; filter:alpha(opacity=60); -moz-opacity:0.6; opacity:0.6;',
 				black			: 'background-color:#000; filter:alpha(opacity=40); -moz-opacity:0.4; opacity:0.4;',
 				transparent 	: 'background-color:transparent;',
-				custom			: null,
+				custom			: null
 			},
 			
 			// Note: the height of "div.modalboxStyleContainerTopLeft" will be set in function centerModalBox() for obsolete browsers like ie6
