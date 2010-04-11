@@ -120,17 +120,26 @@ div#modalBox.emphasis div#modalBoxBody div.modalBoxBodyContent {
 }
 div#modalBox div#modalBoxBody div#modalBoxCloseButton {
 	position:absolute; 
-	top:20px; 
-	right:-15px; 
+	top:19px; 
+	left:19px; 
 	text-align:right; 
-	width:150px;
-}
-* html div#modalBox div#modalBoxBody div#modalBoxCloseButton {/* IE6 fix */
-	right:39px;
+	width:100%;
+	padding:5px 1px 5px 0;
+	background-color:#efefef;
 }
 div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox,
 div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox span {
-	/*text-decoration:none;*/
+	display:block;
+	float:right;
+	text-decoration:none;
+	color:#000;
+}
+div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox {
+	background:transparent url(../img/closebutton_21x21.png) right center no-repeat;
+	margin:0 4px 0 0;
+}
+div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox span {
+	padding:3px 27px 3px 0;
 }
 div#modalBox div#modalBoxBody div.modalboxStyleContainerTopLeft,
 div#modalBox div#modalBoxBody div.modalboxStyleContainerTopRight,
@@ -174,7 +183,7 @@ div#modalBox div#modalBoxBody div.modalboxStyleContainerBottomRight {
 	height:39px;
 }
 div#modalBox div#modalBoxBody div.modalboxStyleContainerContent {
-	padding:39px 0 0 39px;
+	padding:69px 0 0 39px;
 }
 * html div#modalBox div#modalBoxBody div.modalboxStyleContainerTopLeft,
 * html div#modalBox div#modalBoxBody div.modalboxStyleContainerBottomLeft {/* IE6 Fix */
