@@ -3,19 +3,6 @@
 * @requires jQuery v1.2.6 or later 
 * is released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
 */
-/*
-	Example / set custom localized strings:
-	---------------------------------------
-	<script type="text/javascript">
-		var modalboxLocalizedStrings = {
-			messageCloseWindow				: 'Fenster schliessen',
-			messageAjaxLoader				: 'Bitte warten<br>Ihre Anfrage wird verarbeitet.',
-			errorMessageIfNoDataAvailable	: '<strong>Keine Inhalte verf&uuml;gbar!</strong>',
-			errorMessageXMLHttpRequest		: 'Ein technischer Fehler (XML-Http-Request Status "500") verhindert den Aufruf der Seite.<br /><br />Bitte versuchen Sie es sp&auml;ter noch einmal',
-			errorMessageTextStatusError		: 'Ein technischer Fehler (AJAX-Anfrage fehlgeschlagen) verhindert den Aufruf der Seite.<br /><br />Bitte versuchen Sie es sp&auml;ter noch einmal'
-		};
-	</script>
-*/
 (function($){
 	
 	var getCurrentVersionOfJQUERY = jQuery.fn.jquery;
@@ -83,6 +70,18 @@
 					data : '#defineYourContentContainerHere'
 				}
 			});
+			
+			Example 6 / set custom localized strings:
+			---------------------------------------
+			<script type="text/javascript">
+				var modalboxLocalizedStrings = {
+					messageCloseWindow				: 'Fenster schliessen',
+					messageAjaxLoader				: 'Bitte warten<br>Ihre Anfrage wird verarbeitet.',
+					errorMessageIfNoDataAvailable	: '<strong>Keine Inhalte verf&uuml;gbar!</strong>',
+					errorMessageXMLHttpRequest		: 'Ein technischer Fehler (XML-Http-Request Status "500") verhindert den Aufruf der Seite.<br /><br />Bitte versuchen Sie es sp&auml;ter noch einmal',
+					errorMessageTextStatusError		: 'Ein technischer Fehler (AJAX-Anfrage fehlgeschlagen) verhindert den Aufruf der Seite.<br /><br />Bitte versuchen Sie es sp&auml;ter noch einmal'
+				};
+			</script>
 		*/
 		
 		
