@@ -116,6 +116,9 @@ div#modalBox div#modalBoxBody div.modalBoxBodyContent {
 	background-color:white;
 	/* padding:20px; */
 }
+div#modalBox.emphasis div#modalBoxBody div.modalBoxBodyContent {
+	border:1px dotted red;
+}
 div#modalBox div#modalBoxBody div#modalBoxCloseButton {
 	position:absolute; 
 	top:20px; 
