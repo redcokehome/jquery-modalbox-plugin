@@ -126,6 +126,7 @@ div#modalBox div#modalBoxBody div#modalBoxCloseButton {
 	width:100%;
 	padding:5px 1px 5px 0;
 	background-color:#efefef;
+	border-bottom:1px solid #E5E5E5;
 }
 div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox,
 div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox span {
