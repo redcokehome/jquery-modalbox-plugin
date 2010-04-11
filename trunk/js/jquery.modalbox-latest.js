@@ -99,15 +99,17 @@
 			
 			setNameOfHiddenAjaxInputField		: 'ajaxhref',
 			
-			killModalboxOnlyWithCloseButton		: false,
+			killModalboxWithCloseButtonOnly		: false, // options: true, false (close the modal box with close button only)
 			
-			setTypeOfFaderLayer					: 'black', // options: white, black, disable
-			setStylesOfFaderLayer				: {
+			setTypeOfFaderLayer					: 'black', // options: white, black, custom, disable
+			setStylesOfFaderLayer				: {// define the opacity and color of fader layer here
 				white			: 'background-color:#fff; filter:alpha(opacity=60); -moz-opacity:0.6; opacity:0.6;',
 				black			: 'background-color:#000; filter:alpha(opacity=40); -moz-opacity:0.4; opacity:0.4;',
-				transparent 	: 'background-color:transparent;'
+				transparent 	: 'background-color:transparent;',
+				custom			: null,
 			},
 			
+			// Note: the height of "div.modalboxStyleContainerTopLeft" will be set in function centerModalBox() for obsolete browsers like ie6
 			setModalboxLayoutContainer_Begin	: '<div class="modalboxStyleContainerTopLeft"><div class="modalboxStyleContainerTopRight"><div class="modalboxStyleContainerContent">',
 			setModalboxLayoutContainer_End		: '</div></div></div><div class="modalboxStyleContainerBottomLeft"><div class="modalboxStyleContainerBottomRight"></div></div>',
 			setModalboxLayoutContainer_Begin_ObsoleteBrowsers : '<div class="modalboxStyleContainerTopRight"><div class="modalboxStyleContainerContent">',
@@ -121,8 +123,8 @@
 				errorMessageTextStatusError			: 'Error: AJAX Request failed'
 			},
 			
-			minimalTopSpacingOfModalbox 		: 50,
-			usejqueryuidragable					: false,
+			minimalTopSpacingOfModalbox 		: 50, // sets the minimum space between modalbox and visible area in the browser window
+			usejqueryuidragable					: false, //options: true, false (the modalbox is draggable, Requires jQuery v1.2.6 or later, jQuery UI  and components: jQuery UI Widget, jQuery UI Mouse, jQuery UI Draggable)
 			
 			directCall							: {
 				source 	: null, // put url here like http://www.yourdomain.de/test?param=1&param=2
@@ -133,7 +135,7 @@
 		
 		
 		
-		// get custom localized strings if available
+		/************ get custom localized strings if available - BEGIN ************/
 		if( typeof(modalboxLocalizedStrings) !== "undefined" ){
 			if( modalboxLocalizedStrings !== "" ){
 				globaloptions.localizedStrings = {
@@ -145,6 +147,7 @@
 				}
 			}
 		}
+		/************ get custom localized strings if available - END ************/
 		
 		
 		
@@ -538,20 +541,24 @@
 					}
 					
 					
+					var prepareCustomWidthOfModalBox = "";
 					if( settings.element ){
 						if( jQuery(settings.element).hasClass("large") ){
-							var setModalboxClassName = "large";
+							var setModalboxClassName = 'large';
 						} else if( jQuery(settings.element).hasClass("medium") ){
-							var setModalboxClassName = "medium";
+							var setModalboxClassName = 'medium';
 						} else if( jQuery(settings.element).hasClass("small") ){
-							var setModalboxClassName = "small";
+							var setModalboxClassName = 'small';
 						} else if( settings.loadImagePreparer["nameOfImagePreloaderContainer"] ){
-							var setModalboxClassName = "auto";
+							var setModalboxClassName = 'auto';
 							var prepareCustomWidthOfModalBox = 'width:' + Math.abs( settings.loadImagePreparer["widthOfImage"] + 40 ) + 'px; ';
 							prepareCustomWidthOfModalBox += 'height:' + Math.abs( settings.loadImagePreparer["heightOfImage"] + 40 ) + 'px; ';
 						} else {
-							var setModalboxClassName = "";
-							var prepareCustomWidthOfModalBox = "";
+							var setModalboxClassName = '';
+						}
+						
+						if( jQuery(settings.element).hasClass("emphasis") ){
+							setModalboxClassName += ' emphasis';
 						}
 					}
 					
@@ -580,6 +587,7 @@
 						var prepareNameOfAjaxLoader = cleanupSelectorName({
 							replaceValue : globaloptions.setAjaxLoader
 						});
+						
 						
 						var createModalboxContainer = '';
 						createModalboxContainer += '<div id="' + prepareNameOfModalboxContainer + '" class="' + setModalboxClassName + '" style="' + prepareCustomWidthOfModalBox +  '">';
@@ -613,7 +621,6 @@
 						
 						jQuery("body").append(createModalboxContainer);
 						
-						/*~~~ Note: the height of "div.modalboxStyleContainerTopLeft" will be set in function centerModalBox() for obsolete browsers like ie6 ~~~*/
 						
 					} else {
 					
@@ -752,7 +759,11 @@
 				}
 				
 				if( globaloptions.usejqueryuidragable ){
-					jQuery(globaloptions.setModalboxContainer).draggable("destroy").draggable({ opacity: false, iframeFix: true, refreshPositions: true });
+					jQuery(globaloptions.setModalboxContainer).draggable("destroy").draggable({ 
+						opacity: false, 
+						iframeFix: true, 
+						refreshPositions: true 
+					});
 				}
 				
 				showFaderLayer();
@@ -776,6 +787,8 @@
 				var setStyleOfFaderLayer = globaloptions.setStylesOfFaderLayer["white"];
 			} else if ( globaloptions.setTypeOfFaderLayer == "black" ){
 				var setStyleOfFaderLayer = globaloptions.setStylesOfFaderLayer["black"];
+			} else if ( globaloptions.setTypeOfFaderLayer == "custom" && globaloptions.setStylesOfFaderLayer["custom"] ){
+				var setStyleOfFaderLayer = globaloptions.setStylesOfFaderLayer["custom"];
 			} else {//globaloptions.setTypeOfFaderLayer == "disable"
 				var setStyleOfFaderLayer = globaloptions.setStylesOfFaderLayer["transparent"];
 			}
@@ -796,7 +809,7 @@
 					height 	: Math.abs( jQuery(globaloptions.setFaderLayer).height() - 1) + 'px'
 				});
 				
-				if( !globaloptions.killModalboxOnlyWithCloseButton ){
+				if( !globaloptions.killModalboxWithCloseButtonOnly ){
 					jQuery(globaloptions.setFaderLayer).click(function(){
 						jQuery(this).modalBox.close({
 							layerContainer		: globaloptions.setFaderLayer,
