@@ -97,20 +97,6 @@
 				custom			: null
 			},
 			
-			// Note: the height of "div.modalboxStyleContainerTopLeft" will be set in function centerModalBox() for obsolete browsers like ie6
-			setModalboxLayoutContainer_Begin	: '<div class="modalboxStyleContainerTopLeft"><div class="modalboxStyleContainerTopRight"><div class="modalboxStyleContainerContent">',
-			setModalboxLayoutContainer_End		: '</div></div></div><div class="modalboxStyleContainerBottomLeft"><div class="modalboxStyleContainerBottomRight"></div></div>',
-			setModalboxLayoutContainer_Begin_ObsoleteBrowsers : '<div class="modalboxStyleContainerTopRight"><div class="modalboxStyleContainerContent">',
-			setModalboxLayoutContainer_End_ObsoleteBrowsers : '</div></div><div class="modalboxStyleContainerBottomRight"></div><div class="modalboxStyleContainerTopLeft"></div><div class="modalboxStyleContainerBottomLeft"></div>',
-			
-			localizedStrings					: {
-				messageCloseWindow					: 'Close Window',
-				messageAjaxLoader					: 'Please wait',
-				errorMessageIfNoDataAvailable		: '<strong>No content available!</strong>',
-				errorMessageXMLHttpRequest			: 'Error: XML-Http-Request Status "500"',
-				errorMessageTextStatusError			: 'Error: AJAX Request failed'
-			},
-			
 			minimalTopSpacingOfModalbox 		: 50, // sets the minimum space between modalbox and visible area in the browser window
 			usejqueryuidragable					: false, //options: true, false (the modalbox is draggable, Requires jQuery v1.2.6 or later, jQuery UI  and components: jQuery UI Widget, jQuery UI Mouse, jQuery UI Draggable)
 			
@@ -406,24 +392,6 @@
 		
 		
 		
-		/************ cleanupSelectorName - END ************/
-		function cleanupSelectorName(settings){
-		
-			settings = jQuery.extend({
-				replaceValue : ''
-			}, settings || {});
-			
-			var currentReturnValue 	= settings.replaceValue;
-			currentReturnValue 		= currentReturnValue.replace(/[#]/g, "");
-			currentReturnValue 		= currentReturnValue.replace(/[.]/g, "");
-			
-			return currentReturnValue;
-			
-		}
-		/************ cleanupSelectorName - END ************/
-		
-		
-		
 		/************ imagePreparer - END ************/
 		function imagePreparer(settings){
 		
@@ -515,6 +483,9 @@
 			}, settings || {});
 			
 			
+			jQuery(globaloptions.setNameOfPreCacheContainer).remove();
+			
+			
 			if( !settings.data && settings.eMessageNoData ){
 				settings.data = settings.eMessageNoData;
 			}
@@ -574,56 +545,9 @@
 						
 						showFaderLayer();
 						
-						var prepareNameOfModalboxContainer = cleanupSelectorName({
-							replaceValue : globaloptions.setModalboxContainer
+						var createModalboxContainer = modalboxBuilder({
+							customStyles : 'class="' + setModalboxClassName + '" style="' + prepareCustomWidthOfModalBox + '"'
 						});
-						
-						var prepareNameOfModalboxBodyContainer = cleanupSelectorName({
-							replaceValue : globaloptions.setModalboxBodyContainer
-						});
-						
-						var prepareNameOfModalboxContentContainer = cleanupSelectorName({
-							replaceValue : globaloptions.setModalboxBodyContentContainer
-						});
-						
-						var prepareNameOfCloseButtonContainer = cleanupSelectorName({
-							replaceValue : globaloptions.setModalboxCloseButtonContainer
-						});
-						
-						var prepareNameOfAjaxLoader = cleanupSelectorName({
-							replaceValue : globaloptions.setAjaxLoader
-						});
-						
-						
-						var createModalboxContainer = '';
-						createModalboxContainer += '<div id="' + prepareNameOfModalboxContainer + '" class="' + setModalboxClassName + '" style="' + prepareCustomWidthOfModalBox +  '">';
-							createModalboxContainer += '<div id="' + prepareNameOfModalboxBodyContainer + '">';
-								
-								/* Default Design, Part 1 - BEGIN */
-								if ( obsoleteBrowsers ) {
-									createModalboxContainer += globaloptions.setModalboxLayoutContainer_Begin_ObsoleteBrowsers;
-								} else {
-									createModalboxContainer += globaloptions.setModalboxLayoutContainer_Begin;
-								}
-								/* Default Design, Part 1 - END */
-									
-									createModalboxContainer += '<div class="' + prepareNameOfModalboxContentContainer + '">';
-										createModalboxContainer += '<div id="' + prepareNameOfAjaxLoader + '">' + globaloptions.localizedStrings["messageAjaxLoader"] + '</div>';
-									createModalboxContainer += '</div>';
-									
-								/* Default Design, Part 2 - BEGIN */
-								if ( obsoleteBrowsers ) {
-									createModalboxContainer += globaloptions.setModalboxLayoutContainer_End_ObsoleteBrowsers;
-								} else {
-									createModalboxContainer += globaloptions.setModalboxLayoutContainer_End;
-								}
-								/* Default Design, Part 2 - END */
-								
-								//createModalboxContainer += '<div id="' + prepareNameOfCloseButtonContainer + '"><a href="javascript:closeModalBox({layerContainer:\'' + globaloptions.setFaderLayer + '\', setModalboxContainer:\'' + globaloptions.setModalboxContainer + '\' });" class="closeModalBox"><span class="closeModalBox">' + globaloptions.localizedStrings["messageCloseWindow"] + '</span></a></div>';
-								createModalboxContainer += '<div id="' + prepareNameOfCloseButtonContainer + '"><a href="javascript:void(0);" class="closeModalBox"><span class="closeModalBox">' + globaloptions.localizedStrings["messageCloseWindow"] + '</span></a></div>';
-							createModalboxContainer += '</div>';
-						createModalboxContainer += '</div>';
-						
 						
 						jQuery("body").append(createModalboxContainer);
 						
@@ -632,7 +556,7 @@
 					
 						//jQuery.fn.modalBox.close();
 						
-						var prepareNameOfAjaxLoader = cleanupSelectorName({
+						var prepareNameOfAjaxLoader = jQuery.fn.modalBox.cleanupSelectorName({
 							replaceValue : globaloptions.setAjaxLoader
 						});
 						
@@ -805,7 +729,7 @@
 				
 			if ( currentFaderObj.size() == 0 ) {
 				
-				var prepareNameOfFadingLayer = cleanupSelectorName({
+				var prepareNameOfFadingLayer = jQuery.fn.modalBox.cleanupSelectorName({
 					replaceValue : globaloptions.setFaderLayer
 				});
 				
@@ -842,6 +766,72 @@
 	};
 	
 	
+	function modalboxBuilder(settings){
+	
+		
+		settings = jQuery.extend({
+			customStyles : ''
+		}, settings || {});
+	
+		
+		// merge the plugin defaults with custom options
+		settings = jQuery.extend({}, jQuery.fn.modalBox.defaults, settings);
+		
+		
+		var prepareNameOfModalboxContainer = jQuery.fn.modalBox.cleanupSelectorName({
+			replaceValue : settings.setModalboxContainer
+		});
+		
+		var prepareNameOfModalboxBodyContainer = jQuery.fn.modalBox.cleanupSelectorName({
+			replaceValue : settings.setModalboxBodyContainer
+		});
+		
+		var prepareNameOfModalboxContentContainer = jQuery.fn.modalBox.cleanupSelectorName({
+			replaceValue : settings.setModalboxBodyContentContainer
+		});
+		
+		var prepareNameOfCloseButtonContainer = jQuery.fn.modalBox.cleanupSelectorName({
+			replaceValue : settings.setModalboxCloseButtonContainer
+		});
+		
+		var prepareNameOfAjaxLoader = jQuery.fn.modalBox.cleanupSelectorName({
+			replaceValue : settings.setAjaxLoader
+		});
+		
+		
+		var createModalboxContainer = '';
+		createModalboxContainer += '<div id="' + prepareNameOfModalboxContainer + '"' + settings.customStyles + '>';
+			createModalboxContainer += '<div id="' + prepareNameOfModalboxBodyContainer + '">';
+				
+				/* Default Design, Part 1 - BEGIN */
+				if ( obsoleteBrowsers ) {
+					createModalboxContainer += settings.setModalboxLayoutContainer_Begin_ObsoleteBrowsers;
+				} else {
+					createModalboxContainer += settings.setModalboxLayoutContainer_Begin;
+				}
+				/* Default Design, Part 1 - END */
+					
+					createModalboxContainer += '<div class="' + prepareNameOfModalboxContentContainer + '">';
+						createModalboxContainer += '<div id="' + prepareNameOfAjaxLoader + '">' + settings.localizedStrings["messageAjaxLoader"] + '</div>';
+					createModalboxContainer += '</div>';
+					
+				/* Default Design, Part 2 - BEGIN */
+				if ( obsoleteBrowsers ) {
+					createModalboxContainer += settings.setModalboxLayoutContainer_End_ObsoleteBrowsers;
+				} else {
+					createModalboxContainer += settings.setModalboxLayoutContainer_End;
+				}
+				/* Default Design, Part 2 - END */
+				
+				//createModalboxContainer += '<div id="' + prepareNameOfCloseButtonContainer + '"><a href="javascript:closeModalBox({layerContainer:\'' + settings.setFaderLayer + '\', setModalboxContainer:\'' + settings.setModalboxContainer + '\' });" class="closeModalBox"><span class="closeModalBox">' + settings.localizedStrings["messageCloseWindow"] + '</span></a></div>';
+				createModalboxContainer += '<div id="' + prepareNameOfCloseButtonContainer + '"><a href="javascript:void(0);" class="closeModalBox"><span class="closeModalBox">' + settings.localizedStrings["messageCloseWindow"] + '</span></a></div>';
+			createModalboxContainer += '</div>';
+		createModalboxContainer += '</div>';
+		
+		return createModalboxContainer;
+	}
+	
+	
 	jQuery.fn.modalBox.close = function(settings){
 		
 		// merge the plugin defaults with custom options
@@ -870,6 +860,49 @@
 	};
 	
 	
+	
+	jQuery.fn.modalBox.cleanupSelectorName = function(settings){
+	
+		settings = jQuery.extend({
+			replaceValue : ''
+		}, settings || {});
+		
+		var currentReturnValue 	= settings.replaceValue;
+		currentReturnValue 		= currentReturnValue.replace(/[#]/g, "");
+		currentReturnValue 		= currentReturnValue.replace(/[.]/g, "");
+		
+		return currentReturnValue;
+		
+	};
+	
+	
+	
+	jQuery.fn.modalBox.precache = function(settings){
+		
+		// merge the plugin defaults with custom options
+		settings = jQuery.extend({}, jQuery.fn.modalBox.defaults, settings);
+		
+		if( settings.setNameOfPreCacheContainer ){
+			if( jQuery(settings.setNameOfPreCacheContainer).size() == 0 ){
+				
+				var prepareNameOfPreCacheContainer = jQuery.fn.modalBox.cleanupSelectorName({
+					replaceValue : settings.setNameOfPreCacheContainer
+				});
+				
+				var createModalboxContainer = modalboxBuilder();
+				
+				var preCacheContainer = '';
+				preCacheContainer += '<div id="' + prepareNameOfPreCacheContainer + '" style="position:absolute; left:-9999px; top:-9999px;">';
+					preCacheContainer += createModalboxContainer;
+				preCacheContainer += '</div>';
+				
+				jQuery("body").append(preCacheContainer);
+				jQuery(settings.setModalboxContainer).show();
+			}
+		}
+	};
+	
+	
 	jQuery.fn.modalBox.defaults = {
 		setModalboxContainer				: '#modalBox',
 		setModalboxBodyContainer			: '#modalBoxBody',
@@ -878,12 +911,28 @@
 		setAjaxLoader						: '#modalBoxAjaxLoader',
 		setModalboxCloseButtonContainer 	: '#modalBoxCloseButton',
 		getStaticContentFromInnerContainer	: '.modalboxContent',
-		setNameOfHiddenAjaxInputField		: 'ajaxhref'
+		setNameOfHiddenAjaxInputField		: 'ajaxhref',
+		setNameOfPreCacheContainer			: '#modalboxPreCacheContainer',
+		
+		// Note: the height of "div.modalboxStyleContainerTopLeft" will be set in function centerModalBox() for obsolete browsers like ie6
+		setModalboxLayoutContainer_Begin	: '<div class="modalboxStyleContainerTopLeft"><div class="modalboxStyleContainerTopRight"><div class="modalboxStyleContainerContent">',
+		setModalboxLayoutContainer_End		: '</div></div></div><div class="modalboxStyleContainerBottomLeft"><div class="modalboxStyleContainerBottomRight"></div></div>',
+		setModalboxLayoutContainer_Begin_ObsoleteBrowsers : '<div class="modalboxStyleContainerTopRight"><div class="modalboxStyleContainerContent">',
+		setModalboxLayoutContainer_End_ObsoleteBrowsers : '</div></div><div class="modalboxStyleContainerBottomRight"></div><div class="modalboxStyleContainerTopLeft"></div><div class="modalboxStyleContainerBottomLeft"></div>',
+		
+		localizedStrings					: {
+			messageCloseWindow					: 'Close Window',
+			messageAjaxLoader					: 'Please wait',
+			errorMessageIfNoDataAvailable		: '<strong>No content available!</strong>',
+			errorMessageXMLHttpRequest			: 'Error: XML-Http-Request Status "500"',
+			errorMessageTextStatusError			: 'Error: AJAX Request failed'
+		}
 	};
 	
 	
 	jQuery(document).ready(function(){//default Initializing
 		jQuery(".openmodalbox").modalBox();
+		jQuery.fn.modalBox.precache();
 	});
 	
 	
