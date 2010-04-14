@@ -1,13 +1,28 @@
 /*
-* jQuery modalBox plugin v1.0.5 <http://code.google.com/p/jquery-modalbox-plugin/> 
+* jQuery modalBox plugin v1.0.3 <http://code.google.com/p/jquery-modalbox-plugin/> 
 * @requires jQuery v1.2.6 or later 
 * is released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
+*/
+/*
+	Example / set custom localized strings:
+	---------------------------------------
+	<script type="text/javascript">
+		var modalboxLocalizedStrings = {
+			messageCloseWindow				: 'Fenster schliessen',
+			messageAjaxLoader				: 'Bitte warten<br>Ihre Anfrage wird verarbeitet.',
+			errorMessageIfNoDataAvailable	: '<strong>Keine Inhalte verf&uuml;gbar!</strong>',
+			errorMessageXMLHttpRequest		: 'Ein technischer Fehler (XML-Http-Request Status "500") verhindert den Aufruf der Seite.<br /><br />Bitte versuchen Sie es sp&auml;ter noch einmal',
+			errorMessageTextStatusError		: 'Ein technischer Fehler (AJAX-Anfrage fehlgeschlagen) verhindert den Aufruf der Seite.<br /><br />Bitte versuchen Sie es sp&auml;ter noch einmal'
+		};
+	</script>
 */
 (function($){
 	
 	var getCurrentVersionOfJQUERY = jQuery.fn.jquery;
+	var checkIeVersion5 = (navigator.appName == "Microsoft Internet Explorer" && parseInt(navigator.appVersion) == 4 && navigator.appVersion.indexOf("MSIE 5.5") != -1);
+	var checkIeVersion6 = (navigator.appName == "Microsoft Internet Explorer" && parseInt(navigator.appVersion) == 4 && navigator.appVersion.indexOf("MSIE 6.0") != -1);
 	var obsoleteBrowsers = false;
-	if (jQuery.browser.msie && parseInt(jQuery.browser.version) < 7) {
+	if (jQuery.browser.msie && (checkIeVersion5 || checkIeVersion6)) {
 		obsoleteBrowsers = true;
 	}
 	
@@ -68,36 +83,31 @@
 					data : '#defineYourContentContainerHere'
 				}
 			});
-			
-			Example 6 / set custom localized strings:
-			---------------------------------------
-			<script type="text/javascript">
-				var modalboxLocalizedStrings = {
-					messageCloseWindow				: 'Fenster schliessen',
-					messageAjaxLoader				: 'Bitte warten<br>Ihre Anfrage wird verarbeitet.',
-					errorMessageIfNoDataAvailable	: '<strong>Keine Inhalte verf&uuml;gbar!</strong>',
-					errorMessageXMLHttpRequest		: 'Ein technischer Fehler (XML-Http-Request Status "500") verhindert den Aufruf der Seite.<br /><br />Bitte versuchen Sie es sp&auml;ter noch einmal',
-					errorMessageTextStatusError		: 'Ein technischer Fehler (AJAX-Anfrage fehlgeschlagen) verhindert den Aufruf der Seite.<br /><br />Bitte versuchen Sie es sp&auml;ter noch einmal'
-				};
-			</script>
 		*/
 		
 		
 		globaloptions = jQuery.extend({
+			setModalboxContainer				: '#modalBox',
+			setModalboxBodyContainer			: '#modalBoxBody',
+			setModalboxBodyContentContainer		: '.modalBoxBodyContent',
+			setFaderLayer						: '#modalBoxFaderLayer',
+			setAjaxLoader						: '#modalBoxAjaxLoader',
+			setModalboxCloseButtonContainer 	: '#modalBoxCloseButton',
 			
+			getStaticContentFromInnerContainer	: '.modalboxContent',
 			getStaticContentFrom				: null,
 			
-			killModalboxWithCloseButtonOnly		: false, // options: true, false (close the modal box with close button only)
+			setNameOfHiddenAjaxInputField		: 'ajaxhref',
 			
-			setTypeOfFadingLayer				: 'black', // options: white, black, custom, disable
-			setStylesOfFadingLayer				: {// define the opacity and color of fader layer here
+			killModalboxOnlyWithCloseButton		: false,
+			
+			setTypeOfFaderLayer					: 'black', // options: white, black, disable
+			setStylesOfFaderLayer				: {
 				white			: 'background-color:#fff; filter:alpha(opacity=60); -moz-opacity:0.6; opacity:0.6;',
 				black			: 'background-color:#000; filter:alpha(opacity=40); -moz-opacity:0.4; opacity:0.4;',
-				transparent 	: 'background-color:transparent;',
-				custom			: null
+				transparent 	: 'background-color:transparent;'
 			},
 			
-			// Note: the height of "div.modalboxStyleContainerTopLeft" will be set in function centerModalBox() for obsolete browsers like ie6
 			setModalboxLayoutContainer_Begin	: '<div class="modalboxStyleContainerTopLeft"><div class="modalboxStyleContainerTopRight"><div class="modalboxStyleContainerContent">',
 			setModalboxLayoutContainer_End		: '</div></div></div><div class="modalboxStyleContainerBottomLeft"><div class="modalboxStyleContainerBottomRight"></div></div>',
 			setModalboxLayoutContainer_Begin_ObsoleteBrowsers : '<div class="modalboxStyleContainerTopRight"><div class="modalboxStyleContainerContent">',
@@ -111,11 +121,8 @@
 				errorMessageTextStatusError			: 'Error: AJAX Request failed'
 			},
 			
-			minimalTopSpacingOfModalbox 		: 50, // sets the minimum space between modalbox and visible area in the browser window
-			usejqueryuidragable					: false, //options: true, false (the modalbox is draggable, Requires jQuery v1.2.6 or later, jQuery UI  and components: jQuery UI Widget, jQuery UI Mouse, jQuery UI Draggable)
-			
-			callFunctionAfterSuccess			: null,
-			setWidthOfModalLayer				: null,
+			minimalTopSpacingOfModalbox 		: 50,
+			usejqueryuidragable					: false,
 			
 			directCall							: {
 				source 	: null, // put url here like http://www.yourdomain.de/test?param=1&param=2
@@ -126,12 +133,7 @@
 		
 		
 		
-		// merge the plugin defaults with custom options
-		globaloptions = jQuery.extend({}, jQuery.fn.modalBox.defaults, globaloptions);
-		
-		
-		
-		/************ get custom localized strings if available - BEGIN ************/
+		// get custom localized strings if available
 		if( typeof(modalboxLocalizedStrings) !== "undefined" ){
 			if( modalboxLocalizedStrings !== "" ){
 				globaloptions.localizedStrings = {
@@ -143,7 +145,6 @@
 				}
 			}
 		}
-		/************ get custom localized strings if available - END ************/
 		
 		
 		
@@ -156,7 +157,6 @@
 					data	: ''
 				});
 			} else if ( globaloptions.directCall["data"] ){
-				
 				openModalBox({
 					type	: 'static',
 					source 	: '',
@@ -483,10 +483,6 @@
 				createCloseButtonFunctionality += 'jQuery(document).ready(function(){ jQuery(".closeModalBox", "' + globaloptions.setModalboxContainer + '").click(function(){ jQuery(this).modalBox.close({layerContainer:\'' + globaloptions.setFaderLayer + '\', setModalboxContainer:\'' + globaloptions.setModalboxContainer + '\' }); }); });';
 			createCloseButtonFunctionality += '</script>';
 			jQuery(globaloptions.setModalboxContainer).append( createCloseButtonFunctionality );
-			
-			if( globaloptions.callFunctionAfterSuccess ){
-				globaloptions.callFunctionAfterSuccess();
-			}
 		}
 		/************ addCloseButtonFunctionality - END ************/
 		
@@ -542,30 +538,21 @@
 					}
 					
 					
-					var prepareCustomWidthOfModalBox = "";
 					if( settings.element ){
 						if( jQuery(settings.element).hasClass("large") ){
-							var setModalboxClassName = 'large';
+							var setModalboxClassName = "large";
 						} else if( jQuery(settings.element).hasClass("medium") ){
-							var setModalboxClassName = 'medium';
+							var setModalboxClassName = "medium";
 						} else if( jQuery(settings.element).hasClass("small") ){
-							var setModalboxClassName = 'small';
+							var setModalboxClassName = "small";
 						} else if( settings.loadImagePreparer["nameOfImagePreloaderContainer"] ){
-							var setModalboxClassName = 'auto';
-							prepareCustomWidthOfModalBox += 'width:' + Math.abs( settings.loadImagePreparer["widthOfImage"] + 40 ) + 'px; ';
+							var setModalboxClassName = "auto";
+							var prepareCustomWidthOfModalBox = 'width:' + Math.abs( settings.loadImagePreparer["widthOfImage"] + 40 ) + 'px; ';
 							prepareCustomWidthOfModalBox += 'height:' + Math.abs( settings.loadImagePreparer["heightOfImage"] + 40 ) + 'px; ';
 						} else {
-							var setModalboxClassName = '';
+							var setModalboxClassName = "";
+							var prepareCustomWidthOfModalBox = "";
 						}
-						
-						if( jQuery(settings.element).hasClass("emphasis") ){
-							setModalboxClassName += ' emphasis';
-						}
-					}
-					
-					
-					if( globaloptions.setWidthOfModalLayer ){
-						prepareCustomWidthOfModalBox += 'width:' + parseInt( globaloptions.setWidthOfModalLayer ) + 'px; ';
 					}
 					
 					
@@ -593,7 +580,6 @@
 						var prepareNameOfAjaxLoader = cleanupSelectorName({
 							replaceValue : globaloptions.setAjaxLoader
 						});
-						
 						
 						var createModalboxContainer = '';
 						createModalboxContainer += '<div id="' + prepareNameOfModalboxContainer + '" class="' + setModalboxClassName + '" style="' + prepareCustomWidthOfModalBox +  '">';
@@ -627,10 +613,16 @@
 						
 						jQuery("body").append(createModalboxContainer);
 						
+						/*~~~ Note: the height of "div.modalboxStyleContainerTopLeft" will be set in function centerModalBox() for obsolete browsers like ie6 ~~~*/
 						
 					} else {
 					
-						//jQuery.fn.modalBox.close();
+						/*
+						jQuery.fn.modalBox.close({
+							layerContainer		: globaloptions.setFaderLayer,
+							setModalboxContainer: globaloptions.setModalboxContainer
+						});
+						*/
 						
 						var prepareNameOfAjaxLoader = cleanupSelectorName({
 							replaceValue : globaloptions.setAjaxLoader
@@ -711,27 +703,23 @@
 					setPositionLeft = 0;
 				}
 				
-				var setPositionTop = parseInt( jQuery(window).height() - jQuery(globaloptions.setModalboxContainer).height() - 70 ) / 2;
+				var setPositionTop 	= parseInt( jQuery(window).height() - jQuery(globaloptions.setModalboxContainer).height() - 70 ) / 2;
 				
-				if ( obsoleteBrowsers ) {
-					
-					// IE6 fix
-					if( setPositionTop <= 0 ){
-						jQuery(globaloptions.setModalboxContainer).css({
-							position	: "absolute",
-							left		: setPositionLeft + 'px',
-							top			: globaloptions.minimalTopSpacingOfModalbox + 'px',
-							display		: "block",
-							visibility	: "visible"
-						});
-					} else {
-						jQuery(globaloptions.setModalboxContainer).css({
-							position	: "absolute",
-							left		: setPositionLeft + 'px',
-							display		: "block",
-							visibility	: "visible"
-						});
-					}
+				if (jQuery.browser.msie) {
+					var scrollPositionTop = document.documentElement.scrollTop;
+				} else {
+					var scrollPositionTop = window.pageYOffset;
+				}
+				scrollPositionTop = scrollPositionTop + setPositionTop;
+				
+				
+				if (jQuery.browser.msie && parseInt(jQuery.browser.version) < 7) {
+						
+					jQuery(globaloptions.setModalboxContainer).css({
+						position	: "absolute",
+						left		: setPositionLeft + 'px',
+						display		: "block"
+					});
 					
 					simpleScrollTo({
 						targetElement : "a.modalBoxTopLink"
@@ -745,8 +733,7 @@
 							position	: "absolute",
 							left		: setPositionLeft + 'px',
 							top			: globaloptions.minimalTopSpacingOfModalbox + 'px',
-							display		: "block",
-							visibility	: "visible"
+							display		: "block"
 						});
 						
 						simpleScrollTo({
@@ -759,18 +746,13 @@
 							position: "fixed",
 							left	: setPositionLeft + 'px',
 							top		: setPositionTop + 'px',
-							display	: "block",
-							visibility	: "visible"
+							display	: "block"
 						});
 					}
 				}
 				
 				if( globaloptions.usejqueryuidragable ){
-					jQuery(globaloptions.setModalboxContainer).draggable("destroy").draggable({ 
-						opacity: false, 
-						iframeFix: true, 
-						refreshPositions: true 
-					});
+					jQuery(globaloptions.setModalboxContainer).draggable("destroy").draggable({ opacity: false, iframeFix: true, refreshPositions: true });
 				}
 				
 				showFaderLayer();
@@ -790,14 +772,12 @@
 		function showFaderLayer(){
 		
 			
-			if( globaloptions.setTypeOfFadingLayer == "white" ){
-				var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["white"];
-			} else if ( globaloptions.setTypeOfFadingLayer == "black" ){
-				var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["black"];
-			} else if ( globaloptions.setTypeOfFadingLayer == "custom" && globaloptions.setStylesOfFadingLayer["custom"] ){
-				var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["custom"];
-			} else {//globaloptions.setTypeOfFadingLayer == "disable"
-				var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["transparent"];
+			if( globaloptions.setTypeOfFaderLayer == "white" ){
+				var setStyleOfFaderLayer = globaloptions.setStylesOfFaderLayer["white"];
+			} else if ( globaloptions.setTypeOfFaderLayer == "black" ){
+				var setStyleOfFaderLayer = globaloptions.setStylesOfFaderLayer["black"];
+			} else {//globaloptions.setTypeOfFaderLayer == "disable"
+				var setStyleOfFaderLayer = globaloptions.setStylesOfFaderLayer["transparent"];
 			}
 			
 			
@@ -805,20 +785,18 @@
 				
 			if ( currentFaderObj.size() == 0 ) {
 				
-				var prepareNameOfFadingLayer = cleanupSelectorName({
+				var prepareNameOfFaderLayer = cleanupSelectorName({
 					replaceValue : globaloptions.setFaderLayer
 				});
 				
-				jQuery("body").append('<div id="' + prepareNameOfFadingLayer + '" style="' + setStyleOfFadingLayer + '"></div><iframe class="modalBoxIe6layerfix"></iframe>');
+				jQuery("body").append('<div id="' + prepareNameOfFaderLayer + '" style="' + setStyleOfFaderLayer + '"></div><!--[if lte IE 6.5]><iframe class="modalBoxIe6layerfix"></iframe><![endif]-->');
 				
-				if ( obsoleteBrowsers ) {
-					jQuery(".modalBoxIe6layerfix").css({
-						width 	: Math.abs( jQuery("body").width() - 1) + 'px',
-						height 	: Math.abs( jQuery("body").height() - 1) + 'px'
-					});
-				}
+				jQuery("iframe.modalBoxIe6layerfix").css({
+					width 	: Math.abs( jQuery(globaloptions.setFaderLayer).width() - 1) + 'px',
+					height 	: Math.abs( jQuery(globaloptions.setFaderLayer).height() - 1) + 'px'
+				});
 				
-				if( !globaloptions.killModalboxWithCloseButtonOnly ){
+				if( !globaloptions.killModalboxOnlyWithCloseButton ){
 					jQuery(globaloptions.setFaderLayer).click(function(){
 						jQuery(this).modalBox.close({
 							layerContainer		: globaloptions.setFaderLayer,
@@ -832,7 +810,6 @@
 						showFaderLayer();
 					}
 				});
-				
 			} else if ( currentFaderObj.size() != 0 && !currentFaderObj.is(':visible') ){
 				currentFaderObj.show();
 			}
@@ -844,11 +821,14 @@
 	
 	jQuery.fn.modalBox.close = function(settings){
 		
-		// merge the plugin defaults with custom options
-		settings = jQuery.extend({}, jQuery.fn.modalBox.defaults, settings);
+		settings = jQuery.extend({
+			layerContainer			: null,
+			setModalboxContainer	: null
+		}, settings || {});
 		
-		if( settings.setFaderLayer && settings.setModalboxContainer ){
-			jQuery(settings.setFaderLayer).remove();
+		
+		if( settings.layerContainer && settings.setModalboxContainer ){
+			jQuery(settings.layerContainer).remove();
 			jQuery(settings.setModalboxContainer).remove();
 			jQuery("iframe.modalBoxIe6layerfix").remove();
 		}
@@ -867,18 +847,6 @@
 		if( settings.setModalboxContentContainer ){
 			jQuery(settings.setModalboxContentContainer).html('<div id="' + settings.setAjaxLoader + '">' + settings.localizedStrings + '</div>');
 		}
-	};
-	
-	
-	jQuery.fn.modalBox.defaults = {
-		setModalboxContainer				: '#modalBox',
-		setModalboxBodyContainer			: '#modalBoxBody',
-		setModalboxBodyContentContainer		: '.modalBoxBodyContent',
-		setFaderLayer						: '#modalBoxFaderLayer',
-		setAjaxLoader						: '#modalBoxAjaxLoader',
-		setModalboxCloseButtonContainer 	: '#modalBoxCloseButton',
-		getStaticContentFromInnerContainer	: '.modalboxContent',
-		setNameOfHiddenAjaxInputField		: 'ajaxhref'
 	};
 	
 	
