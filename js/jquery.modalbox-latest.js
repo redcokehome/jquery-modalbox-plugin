@@ -1,15 +1,13 @@
 /*
-* jQuery modalBox plugin (trunk) <http://code.google.com/p/jquery-modalbox-plugin/> 
+* jQuery modalBox plugin v1.0.5 <http://code.google.com/p/jquery-modalbox-plugin/> 
 * @requires jQuery v1.2.6 or later 
 * is released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
 */
 (function($){
 	
 	var getCurrentVersionOfJQUERY = jQuery.fn.jquery;
-	var checkIeVersion5 = (navigator.appName == "Microsoft Internet Explorer" && parseInt(navigator.appVersion) == 4 && navigator.appVersion.indexOf("MSIE 5.5") != -1);
-	var checkIeVersion6 = (navigator.appName == "Microsoft Internet Explorer" && parseInt(navigator.appVersion) == 4 && navigator.appVersion.indexOf("MSIE 6.0") != -1);
 	var obsoleteBrowsers = false;
-	if (jQuery.browser.msie && (checkIeVersion5 || checkIeVersion6)) {
+	if (jQuery.browser.msie && parseInt(jQuery.browser.version) < 7) {
 		obsoleteBrowsers = true;
 	}
 	
@@ -86,22 +84,13 @@
 		
 		
 		globaloptions = jQuery.extend({
-			setModalboxContainer				: '#modalBox',
-			setModalboxBodyContainer			: '#modalBoxBody',
-			setModalboxBodyContentContainer		: '.modalBoxBodyContent',
-			setFaderLayer						: '#modalBoxFaderLayer',
-			setAjaxLoader						: '#modalBoxAjaxLoader',
-			setModalboxCloseButtonContainer 	: '#modalBoxCloseButton',
 			
-			getStaticContentFromInnerContainer	: '.modalboxContent',
 			getStaticContentFrom				: null,
-			
-			setNameOfHiddenAjaxInputField		: 'ajaxhref',
 			
 			killModalboxWithCloseButtonOnly		: false, // options: true, false (close the modal box with close button only)
 			
-			setTypeOfFaderLayer					: 'black', // options: white, black, custom, disable
-			setStylesOfFaderLayer				: {// define the opacity and color of fader layer here
+			setTypeOfFadingLayer				: 'black', // options: white, black, custom, disable
+			setStylesOfFadingLayer				: {// define the opacity and color of fader layer here
 				white			: 'background-color:#fff; filter:alpha(opacity=60); -moz-opacity:0.6; opacity:0.6;',
 				black			: 'background-color:#000; filter:alpha(opacity=40); -moz-opacity:0.4; opacity:0.4;',
 				transparent 	: 'background-color:transparent;',
@@ -125,12 +114,20 @@
 			minimalTopSpacingOfModalbox 		: 50, // sets the minimum space between modalbox and visible area in the browser window
 			usejqueryuidragable					: false, //options: true, false (the modalbox is draggable, Requires jQuery v1.2.6 or later, jQuery UI  and components: jQuery UI Widget, jQuery UI Mouse, jQuery UI Draggable)
 			
+			callFunctionAfterSuccess			: null,
+			setWidthOfModalLayer				: null,
+			
 			directCall							: {
 				source 	: null, // put url here like http://www.yourdomain.de/test?param=1&param=2
 				data	: null // define identifyer of source container here to get html content, can be id or class like  like '#sourcecontainer'
 			}
 			
 		}, globaloptions || {} );
+		
+		
+		
+		// merge the plugin defaults with custom options
+		globaloptions = jQuery.extend({}, jQuery.fn.modalBox.defaults, globaloptions);
 		
 		
 		
@@ -159,6 +156,7 @@
 					data	: ''
 				});
 			} else if ( globaloptions.directCall["data"] ){
+				
 				openModalBox({
 					type	: 'static',
 					source 	: '',
@@ -485,6 +483,10 @@
 				createCloseButtonFunctionality += 'jQuery(document).ready(function(){ jQuery(".closeModalBox", "' + globaloptions.setModalboxContainer + '").click(function(){ jQuery(this).modalBox.close({layerContainer:\'' + globaloptions.setFaderLayer + '\', setModalboxContainer:\'' + globaloptions.setModalboxContainer + '\' }); }); });';
 			createCloseButtonFunctionality += '</script>';
 			jQuery(globaloptions.setModalboxContainer).append( createCloseButtonFunctionality );
+			
+			if( globaloptions.callFunctionAfterSuccess ){
+				globaloptions.callFunctionAfterSuccess();
+			}
 		}
 		/************ addCloseButtonFunctionality - END ************/
 		
@@ -550,7 +552,7 @@
 							var setModalboxClassName = 'small';
 						} else if( settings.loadImagePreparer["nameOfImagePreloaderContainer"] ){
 							var setModalboxClassName = 'auto';
-							var prepareCustomWidthOfModalBox = 'width:' + Math.abs( settings.loadImagePreparer["widthOfImage"] + 40 ) + 'px; ';
+							prepareCustomWidthOfModalBox += 'width:' + Math.abs( settings.loadImagePreparer["widthOfImage"] + 40 ) + 'px; ';
 							prepareCustomWidthOfModalBox += 'height:' + Math.abs( settings.loadImagePreparer["heightOfImage"] + 40 ) + 'px; ';
 						} else {
 							var setModalboxClassName = '';
@@ -559,6 +561,11 @@
 						if( jQuery(settings.element).hasClass("emphasis") ){
 							setModalboxClassName += ' emphasis';
 						}
+					}
+					
+					
+					if( globaloptions.setWidthOfModalLayer ){
+						prepareCustomWidthOfModalBox += 'width:' + parseInt( globaloptions.setWidthOfModalLayer ) + 'px; ';
 					}
 					
 					
@@ -623,12 +630,7 @@
 						
 					} else {
 					
-						/*
-						jQuery.fn.modalBox.close({
-							layerContainer		: globaloptions.setFaderLayer,
-							setModalboxContainer: globaloptions.setModalboxContainer
-						});
-						*/
+						//jQuery.fn.modalBox.close();
 						
 						var prepareNameOfAjaxLoader = cleanupSelectorName({
 							replaceValue : globaloptions.setAjaxLoader
@@ -709,23 +711,27 @@
 					setPositionLeft = 0;
 				}
 				
-				var setPositionTop 	= parseInt( jQuery(window).height() - jQuery(globaloptions.setModalboxContainer).height() - 70 ) / 2;
+				var setPositionTop = parseInt( jQuery(window).height() - jQuery(globaloptions.setModalboxContainer).height() - 70 ) / 2;
 				
-				if (jQuery.browser.msie) {
-					var scrollPositionTop = document.documentElement.scrollTop;
-				} else {
-					var scrollPositionTop = window.pageYOffset;
-				}
-				scrollPositionTop = scrollPositionTop + setPositionTop;
-				
-				
-				if (jQuery.browser.msie && parseInt(jQuery.browser.version) < 7) {
-						
-					jQuery(globaloptions.setModalboxContainer).css({
-						position	: "absolute",
-						left		: setPositionLeft + 'px',
-						display		: "block"
-					});
+				if ( obsoleteBrowsers ) {
+					
+					// IE6 fix
+					if( setPositionTop <= 0 ){
+						jQuery(globaloptions.setModalboxContainer).css({
+							position	: "absolute",
+							left		: setPositionLeft + 'px',
+							top			: globaloptions.minimalTopSpacingOfModalbox + 'px',
+							display		: "block",
+							visibility	: "visible"
+						});
+					} else {
+						jQuery(globaloptions.setModalboxContainer).css({
+							position	: "absolute",
+							left		: setPositionLeft + 'px',
+							display		: "block",
+							visibility	: "visible"
+						});
+					}
 					
 					simpleScrollTo({
 						targetElement : "a.modalBoxTopLink"
@@ -739,7 +745,8 @@
 							position	: "absolute",
 							left		: setPositionLeft + 'px',
 							top			: globaloptions.minimalTopSpacingOfModalbox + 'px',
-							display		: "block"
+							display		: "block",
+							visibility	: "visible"
 						});
 						
 						simpleScrollTo({
@@ -752,7 +759,8 @@
 							position: "fixed",
 							left	: setPositionLeft + 'px',
 							top		: setPositionTop + 'px',
-							display	: "block"
+							display	: "block",
+							visibility	: "visible"
 						});
 					}
 				}
@@ -782,14 +790,14 @@
 		function showFaderLayer(){
 		
 			
-			if( globaloptions.setTypeOfFaderLayer == "white" ){
-				var setStyleOfFaderLayer = globaloptions.setStylesOfFaderLayer["white"];
-			} else if ( globaloptions.setTypeOfFaderLayer == "black" ){
-				var setStyleOfFaderLayer = globaloptions.setStylesOfFaderLayer["black"];
-			} else if ( globaloptions.setTypeOfFaderLayer == "custom" && globaloptions.setStylesOfFaderLayer["custom"] ){
-				var setStyleOfFaderLayer = globaloptions.setStylesOfFaderLayer["custom"];
-			} else {//globaloptions.setTypeOfFaderLayer == "disable"
-				var setStyleOfFaderLayer = globaloptions.setStylesOfFaderLayer["transparent"];
+			if( globaloptions.setTypeOfFadingLayer == "white" ){
+				var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["white"];
+			} else if ( globaloptions.setTypeOfFadingLayer == "black" ){
+				var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["black"];
+			} else if ( globaloptions.setTypeOfFadingLayer == "custom" && globaloptions.setStylesOfFadingLayer["custom"] ){
+				var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["custom"];
+			} else {//globaloptions.setTypeOfFadingLayer == "disable"
+				var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["transparent"];
 			}
 			
 			
@@ -797,16 +805,18 @@
 				
 			if ( currentFaderObj.size() == 0 ) {
 				
-				var prepareNameOfFaderLayer = cleanupSelectorName({
+				var prepareNameOfFadingLayer = cleanupSelectorName({
 					replaceValue : globaloptions.setFaderLayer
 				});
 				
-				jQuery("body").append('<div id="' + prepareNameOfFaderLayer + '" style="' + setStyleOfFaderLayer + '"></div><!--[if lte IE 6.5]><iframe class="modalBoxIe6layerfix"></iframe><![endif]-->');
+				jQuery("body").append('<div id="' + prepareNameOfFadingLayer + '" style="' + setStyleOfFadingLayer + '"></div><iframe class="modalBoxIe6layerfix"></iframe>');
 				
-				jQuery("iframe.modalBoxIe6layerfix").css({
-					width 	: Math.abs( jQuery(globaloptions.setFaderLayer).width() - 1) + 'px',
-					height 	: Math.abs( jQuery(globaloptions.setFaderLayer).height() - 1) + 'px'
-				});
+				if ( obsoleteBrowsers ) {
+					jQuery(".modalBoxIe6layerfix").css({
+						width 	: Math.abs( jQuery("body").width() - 1) + 'px',
+						height 	: Math.abs( jQuery("body").height() - 1) + 'px'
+					});
+				}
 				
 				if( !globaloptions.killModalboxWithCloseButtonOnly ){
 					jQuery(globaloptions.setFaderLayer).click(function(){
@@ -822,6 +832,7 @@
 						showFaderLayer();
 					}
 				});
+				
 			} else if ( currentFaderObj.size() != 0 && !currentFaderObj.is(':visible') ){
 				currentFaderObj.show();
 			}
@@ -833,14 +844,11 @@
 	
 	jQuery.fn.modalBox.close = function(settings){
 		
-		settings = jQuery.extend({
-			layerContainer			: null,
-			setModalboxContainer	: null
-		}, settings || {});
+		// merge the plugin defaults with custom options
+		settings = jQuery.extend({}, jQuery.fn.modalBox.defaults, settings);
 		
-		
-		if( settings.layerContainer && settings.setModalboxContainer ){
-			jQuery(settings.layerContainer).remove();
+		if( settings.setFaderLayer && settings.setModalboxContainer ){
+			jQuery(settings.setFaderLayer).remove();
 			jQuery(settings.setModalboxContainer).remove();
 			jQuery("iframe.modalBoxIe6layerfix").remove();
 		}
@@ -859,6 +867,18 @@
 		if( settings.setModalboxContentContainer ){
 			jQuery(settings.setModalboxContentContainer).html('<div id="' + settings.setAjaxLoader + '">' + settings.localizedStrings + '</div>');
 		}
+	};
+	
+	
+	jQuery.fn.modalBox.defaults = {
+		setModalboxContainer				: '#modalBox',
+		setModalboxBodyContainer			: '#modalBoxBody',
+		setModalboxBodyContentContainer		: '.modalBoxBodyContent',
+		setFaderLayer						: '#modalBoxFaderLayer',
+		setAjaxLoader						: '#modalBoxAjaxLoader',
+		setModalboxCloseButtonContainer 	: '#modalBoxCloseButton',
+		getStaticContentFromInnerContainer	: '.modalboxContent',
+		setNameOfHiddenAjaxInputField		: 'ajaxhref'
 	};
 	
 	
