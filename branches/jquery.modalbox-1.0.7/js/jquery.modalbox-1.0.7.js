@@ -623,88 +623,89 @@
 		
 		/************ centerModalBox - BEGIN ************/
 		function centerModalBox(){
-		
-			if( jQuery(globaloptions.setModalboxContainer).size() != 0 ){
-				
-				if( jQuery("body a.modalBoxTopLink").size() == 0 ){
-					jQuery("body").prepend('<a class="modalBoxTopLink"></a>');
-				}
-				
-				var setPositionLeft = parseInt( jQuery(window).width() - jQuery(globaloptions.setModalboxContainer).width() ) / 2;
-				if( setPositionLeft <= 0 ){
-					setPositionLeft = 0;
-				}
-				
-				var setPositionTop = parseInt( jQuery(window).height() - jQuery(globaloptions.setModalboxContainer).height() - 70 ) / 2;
-				
-				if ( obsoleteBrowsers ) {
+			
+			if( jQuery(globaloptions.setNameOfPreCacheContainer).size() == 0 ){
+				if( jQuery(globaloptions.setModalboxContainer).size() != 0 ){
 					
-					// IE6 fix
-					if( setPositionTop <= 0 ){
-						jQuery(globaloptions.setModalboxContainer).css({
-							position	: "absolute",
-							left		: setPositionLeft + 'px',
-							top			: globaloptions.minimalTopSpacingOfModalbox + 'px',
-							display		: "block",
-							visibility	: "visible"
-						});
-					} else {
-						jQuery(globaloptions.setModalboxContainer).css({
-							position	: "absolute",
-							left		: setPositionLeft + 'px',
-							display		: "block",
-							visibility	: "visible"
-						});
+					if( jQuery("body a.modalBoxTopLink").size() == 0 ){
+						jQuery("body").prepend('<a class="modalBoxTopLink"></a>');
 					}
 					
-					simpleScrollTo({
-						targetElement : "a.modalBoxTopLink"
-					});
+					var setPositionLeft = parseInt( jQuery(window).width() - jQuery(globaloptions.setModalboxContainer).width() ) / 2;
+					if( setPositionLeft <= 0 ){
+						setPositionLeft = 0;
+					}
 					
-				} else {
+					var setPositionTop = parseInt( jQuery(window).height() - jQuery(globaloptions.setModalboxContainer).height() - 70 ) / 2;
 					
-					if( setPositionTop <= 0 ){
+					if ( obsoleteBrowsers ) {
 						
-						jQuery(globaloptions.setModalboxContainer).css({
-							position	: "absolute",
-							left		: setPositionLeft + 'px',
-							top			: globaloptions.minimalTopSpacingOfModalbox + 'px',
-							display		: "block",
-							visibility	: "visible"
-						});
+						// IE6 fix
+						if( setPositionTop <= 0 ){
+							jQuery(globaloptions.setModalboxContainer).css({
+								position	: "absolute",
+								left		: setPositionLeft + 'px',
+								top			: globaloptions.minimalTopSpacingOfModalbox + 'px',
+								display		: "block",
+								visibility	: "visible"
+							});
+						} else {
+							jQuery(globaloptions.setModalboxContainer).css({
+								position	: "absolute",
+								left		: setPositionLeft + 'px',
+								display		: "block",
+								visibility	: "visible"
+							});
+						}
 						
 						simpleScrollTo({
 							targetElement : "a.modalBoxTopLink"
 						});
 						
 					} else {
+						
+						if( setPositionTop <= 0 ){
+							
+							jQuery(globaloptions.setModalboxContainer).css({
+								position	: "absolute",
+								left		: setPositionLeft + 'px',
+								top			: globaloptions.minimalTopSpacingOfModalbox + 'px',
+								display		: "block",
+								visibility	: "visible"
+							});
+							
+							simpleScrollTo({
+								targetElement : "a.modalBoxTopLink"
+							});
+							
+						} else {
+						
+							jQuery(globaloptions.setModalboxContainer).css({
+								position: "fixed",
+								left	: setPositionLeft + 'px',
+								top		: setPositionTop + 'px',
+								display	: "block",
+								visibility	: "visible"
+							});
+						}
+					}
 					
-						jQuery(globaloptions.setModalboxContainer).css({
-							position: "fixed",
-							left	: setPositionLeft + 'px',
-							top		: setPositionTop + 'px',
-							display	: "block",
-							visibility	: "visible"
+					if( globaloptions.usejqueryuidragable ){
+						jQuery(globaloptions.setModalboxContainer).draggable("destroy").draggable({ 
+							opacity: false, 
+							iframeFix: true, 
+							refreshPositions: true 
 						});
 					}
+					
+					showFaderLayer();
 				}
 				
-				if( globaloptions.usejqueryuidragable ){
-					jQuery(globaloptions.setModalboxContainer).draggable("destroy").draggable({ 
-						opacity: false, 
-						iframeFix: true, 
-						refreshPositions: true 
-					});
+				if ( obsoleteBrowsers ) {
+					var getHeightOfTopRightContainer = jQuery("div.modalboxStyleContainerTopRight", globaloptions.setModalboxContainer).height();
+					jQuery("div.modalboxStyleContainerTopLeft", globaloptions.setModalboxContainer).height( getHeightOfTopRightContainer );
 				}
-				
-				showFaderLayer();
 			}
-			
-			if ( obsoleteBrowsers ) {
-				var getHeightOfTopRightContainer = jQuery("div.modalboxStyleContainerTopRight", globaloptions.setModalboxContainer).height();
-				jQuery("div.modalboxStyleContainerTopLeft", globaloptions.setModalboxContainer).height( getHeightOfTopRightContainer );
-			}
-			
 		}
 		/************ centerModalBox - END ************/
 		
