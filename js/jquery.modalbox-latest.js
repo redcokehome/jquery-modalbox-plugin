@@ -116,21 +116,8 @@
 		globaloptions = jQuery.extend({}, jQuery.fn.modalBox.defaults, globaloptions);
 		
 		
-		
-		/************ get custom localized strings if available - BEGIN ************/
-		if( typeof(modalboxLocalizedStrings) !== "undefined" ){
-			if( modalboxLocalizedStrings !== "" ){
-				globaloptions.localizedStrings = {
-					messageCloseWindow				: modalboxLocalizedStrings["messageCloseWindow"],
-					messageAjaxLoader				: modalboxLocalizedStrings["messageAjaxLoader"],
-					errorMessageIfNoDataAvailable	: modalboxLocalizedStrings["errorMessageIfNoDataAvailable"],
-					errorMessageXMLHttpRequest		: modalboxLocalizedStrings["errorMessageXMLHttpRequest"],
-					errorMessageTextStatusError		: modalboxLocalizedStrings["errorMessageTextStatusError"]
-				}
-			}
-		}
-		/************ get custom localized strings if available - END ************/
-		
+		// get current locales
+		globaloptions.localizedStrings = jQuery.fn.modalBox.getlocales();
 		
 		
 		/************ direct call without event binding - BEGIN ************/
@@ -779,6 +766,10 @@
 		settings = jQuery.extend({}, jQuery.fn.modalBox.defaults, settings);
 		
 		
+		// get current locales
+		settings.localizedStrings = jQuery.fn.modalBox.getlocales();
+		
+		
 		var prepareNameOfModalboxContainer = jQuery.fn.modalBox.cleanupSelectorName({
 			replaceValue : settings.setModalboxContainer
 		});
@@ -878,9 +869,35 @@
 	
 	
 	
+	/************ get custom localized strings if available - BEGIN ************/
+	jQuery.fn.modalBox.getlocales = function(settings){
+	
+		// merge the plugin defaults with custom settings
+		settings = jQuery.extend({}, jQuery.fn.modalBox.defaults, settings);
+		
+		
+		if( typeof(modalboxLocalizedStrings) !== "undefined" ){
+			if( modalboxLocalizedStrings !== "" ){
+				settings.localizedStrings = {
+					messageCloseWindow				: modalboxLocalizedStrings["messageCloseWindow"],
+					messageAjaxLoader				: modalboxLocalizedStrings["messageAjaxLoader"],
+					errorMessageIfNoDataAvailable	: modalboxLocalizedStrings["errorMessageIfNoDataAvailable"],
+					errorMessageXMLHttpRequest		: modalboxLocalizedStrings["errorMessageXMLHttpRequest"],
+					errorMessageTextStatusError		: modalboxLocalizedStrings["errorMessageTextStatusError"]
+				}
+			}
+		}
+		
+		return settings.localizedStrings;
+		
+	};
+	/************ get custom localized strings if available - END ************/
+	
+	
+	
 	jQuery.fn.modalBox.precache = function(settings){
 		
-		// merge the plugin defaults with custom options
+		// merge the plugin defaults with custom settings
 		settings = jQuery.extend({}, jQuery.fn.modalBox.defaults, settings);
 		
 		if( settings.setNameOfPreCacheContainer ){
