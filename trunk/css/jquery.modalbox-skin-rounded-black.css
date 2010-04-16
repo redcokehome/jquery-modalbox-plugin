@@ -1,0 +1,81 @@
+/* skin rounded-black - BEGIN */
+div#modalBox div#modalBoxBody div#modalBoxCloseButton {
+	position:absolute; 
+	top:8px; 
+	left:16px; 
+	text-align:right; 
+	width:100%;
+	padding:5px 0;
+}
+div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox,
+div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox span {
+	display:block;
+	float:right;
+	text-decoration:none;
+	color:#f4f4f4;
+	cursor:pointer;
+}
+div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox {
+	background:transparent url(../img/closebutton_21x21.png) right center no-repeat;
+	margin:0 4px 0 0;
+}
+div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox span {
+	padding:3px 27px 3px 0;
+}
+div#modalBox div#modalBoxBody div.modalboxStyleContainerTopLeft,
+div#modalBox div#modalBoxBody div.modalboxStyleContainerTopRight,
+div#modalBox div#modalBoxBody div.modalboxStyleContainerBottomLeft,
+div#modalBox div#modalBoxBody div.modalboxStyleContainerBottomRight {
+	background-color:transparent;
+	background-position:left top;
+	background-repeat:no-repeat;
+	width:100%;
+	clear:both;
+}
+div#modalBox div#modalBoxBody div.modalboxStyleContainerTopLeft,
+div#modalBox div#modalBoxBody div.modalboxStyleContainerBottomLeft {
+	padding:0 29px 0 0;
+}
+* html div#modalBox div#modalBoxBody div.modalboxStyleContainerTopLeft,
+* html div#modalBox div#modalBoxBody div.modalboxStyleContainerBottomLeft {/* IE6 Fix */
+	padding:0;
+}
+* html div#modalBox div#modalBoxBody div.modalboxStyleContainerTopRight,
+* html div#modalBox div#modalBoxBody div.modalboxStyleContainerBottomRight {/* IE6 Fix */
+	margin:0 29px 0 0;
+}
+div#modalBox div#modalBoxBody div.modalboxStyleContainerTopLeft {
+	background-image:url(../img/skins/rounded_black/shadows_bg_topright.png);
+	background-position:right top;
+}
+div#modalBox div#modalBoxBody div.modalboxStyleContainerTopRight {
+	background-image:url(../img/skins/rounded_black/shadows_bg_topleft.png);
+}
+div#modalBox div#modalBoxBody div.modalboxStyleContainerBottomLeft {
+	background-image:url(../img/skins/rounded_black/shadows_bg_bottomright.png);
+	background-position:right top;
+}
+div#modalBox div#modalBoxBody div.modalboxStyleContainerBottomRight {
+	background-image:url(../img/skins/rounded_black/shadows_bg_bottomleft.png);
+	background-position:left top;
+}
+div#modalBox div#modalBoxBody div.modalboxStyleContainerBottomLeft,
+div#modalBox div#modalBoxBody div.modalboxStyleContainerBottomRight {
+	height:29px;
+}
+div#modalBox div#modalBoxBody div.modalboxStyleContainerContent {
+	padding:59px 0 10px 39px;
+}
+* html div#modalBox div#modalBoxBody div.modalboxStyleContainerTopLeft,
+* html div#modalBox div#modalBoxBody div.modalboxStyleContainerBottomLeft {/* IE6 Fix */
+	position:absolute;
+	right:-1px;
+	width:29px;
+}
+* html div#modalBox div#modalBoxBody div.modalboxStyleContainerTopLeft {/* IE6 Fix */
+	top:0;
+}
+* html div#modalBox div#modalBoxBody div.modalboxStyleContainerBottomLeft {/* IE6 Fix */
+	bottom:-1px;
+}
+/* skin rounded-black - END */
