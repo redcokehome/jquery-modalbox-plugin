@@ -2,25 +2,22 @@
 div#modalBox div#modalBoxBody div#modalBoxCloseButton {
 	position:absolute; 
 	top:8px; 
-	left:16px; 
-	text-align:right; 
-	width:100%;
-	padding:5px 0;
+	right:-5px; 
+	width:29px;
 }
 div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox,
 div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox span {
-	display:block;
-	float:right;
 	text-decoration:none;
 	color:#f4f4f4;
 	cursor:pointer;
 }
 div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox {
-	background:transparent url(../img/closebutton_21x21.png) right center no-repeat;
-	margin:0 4px 0 0;
+	display:block;
+	height:20px;
+	background:transparent url(../img/skins/rounded_black/closebutton_29x20.png) right center no-repeat;
 }
 div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox span {
-	padding:3px 27px 3px 0;
+	display:none;
 }
 div#modalBox div#modalBoxBody div.modalboxStyleContainerTopLeft,
 div#modalBox div#modalBoxBody div.modalboxStyleContainerTopRight,

@@ -18,7 +18,7 @@ div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox span {
 	cursor:pointer;
 }
 div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox {
-	background:transparent url(../img/closebutton_21x21.png) right center no-repeat;
+	background:transparent url(../img/skins/default/closebutton_21x21.png) right center no-repeat;
 	margin:0 4px 0 0;
 }
 div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox span {
