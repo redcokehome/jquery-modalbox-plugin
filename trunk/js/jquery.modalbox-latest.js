@@ -1,5 +1,5 @@
 /*
-* jQuery modalBox plugin v1.0.7 <http://code.google.com/p/jquery-modalbox-plugin/> 
+* jQuery modalBox plugin <trunk> <http://code.google.com/p/jquery-modalbox-plugin/> 
 * @requires jQuery v1.2.6 or later 
 * is released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
 */
@@ -65,7 +65,15 @@
 			------------------------------------
 			jQuery.fn.modalBox({ 
 				directCall : {
-					data : '#defineYourContentContainerHere'
+					data : '<div class="testclass">test</div>'
+				}
+			});
+			
+			Example 5 / Direct Call, element:
+			------------------------------------
+			jQuery.fn.modalBox({ 
+				directCall : {
+					element : '#defineYourContentContainerHere'
 				}
 			});
 			
@@ -105,7 +113,8 @@
 			
 			directCall							: {
 				source 	: null, // put url here like http://www.yourdomain.de/test?param=1&param=2
-				data	: null // define identifyer of source container here to get html content, can be id or class like  like '#sourcecontainer'
+				data	: null, // put content here like data : '<div class="testclass">test</div>'
+				element	: null // define identifyer of source container here to get html content, can be id or class like  like '#sourcecontainer'
 			}
 			
 		}, globaloptions || {} );
@@ -129,11 +138,16 @@
 					data	: ''
 				});
 			} else if ( globaloptions.directCall["data"] ){
-				
 				openModalBox({
 					type	: 'static',
 					source 	: '',
-					data	: jQuery( globaloptions.directCall["data"] ).html()
+					data	: globaloptions.directCall["data"]
+				});
+			} else if ( globaloptions.directCall["element"] ){
+				openModalBox({
+					type	: 'static',
+					source 	: '',
+					data	: jQuery( globaloptions.directCall["element"] ).html()
 				});
 			}
 		}
@@ -199,8 +213,8 @@
 					var type		= 'ajax';
 					currentEvent.preventDefault();
 				} else if ( jQuery(globaloptions.getStaticContentFromInnerContainer, elementObj).size() != 0 ) {
-					if ( jQuery(globaloptions.getStaticContentFromInnerContainer + " img", elementObj).size() != 0 ) {
-						var currentImageObj = jQuery(globaloptions.getStaticContentFromInnerContainer + " img", elementObj);
+					if ( jQuery(globaloptions.getStaticContentFromInnerContainer + " img." + globaloptions.setNameOfGalleryImage, elementObj).size() != 0 ) {
+						var currentImageObj = jQuery(globaloptions.getStaticContentFromInnerContainer + " img." + globaloptions.setNameOfGalleryImage, elementObj);
 					}
 					var source 		= '';
 					var data		= jQuery(globaloptions.getStaticContentFromInnerContainer, elementObj).html();
@@ -303,6 +317,8 @@
 					console.log( "XMLHttpRequest.status: " + XMLHttpRequest.status );
 				}
 				
+				addCloseButtonFunctionality();
+				
 			} else if ( textStatus == "error" ) {
 				
 				if ( settings.targetContainer ){
@@ -315,6 +331,9 @@
 				if( settings.ar_enableDebugging ){
 					console.log( "textStatus: " + textStatus );
 				}
+				
+				addCloseButtonFunctionality();
+				
 			} else {
 				// no errors
 			}
@@ -400,8 +419,10 @@
 				
 				
 				jQuery(globaloptions.getStaticContentFromInnerContainer).css({ 
-					visibility: "hidden", 
-					display: "block" 
+					display : "block",
+					position : "absolute",
+					left : "-9999px",
+					top : "-9999px"
 				});
 				
 				
@@ -931,6 +952,7 @@
 		getStaticContentFromInnerContainer	: '.modalboxContent',
 		setNameOfHiddenAjaxInputField		: 'ajaxhref',
 		setNameOfPreCacheContainer			: '#modalboxPreCacheContainer',
+		setNameOfGalleryImage				: 'modalgallery',
 		
 		// Note: the height of "div.modalboxStyleContainerTopLeft" will be set in function centerModalBox() for obsolete browsers like ie6
 		setModalboxLayoutContainer_Begin	: '<div class="modalboxStyleContainerTopLeft"><div class="modalboxStyleContainerTopRight"><div class="modalboxStyleContainerContent">',
