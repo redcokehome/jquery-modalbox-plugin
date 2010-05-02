@@ -1,6 +1,9 @@
 .modalboxContent {
 	display:none;
 }
+.modalgallery {
+	display:block;
+}
 div#modalBoxFaderLayer,
 div#modalBoxAjaxLoader,
 div#modalBox,
