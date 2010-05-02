@@ -411,12 +411,15 @@
 					currentImageObj 	: settings.loadImagePreparer["currentImageObj"],
 					finalizeModalBox 	: settings.loadImagePreparer["finalizeModalBox"]
 				},
-				nameOfImagePreloaderContainer 	: "imagePreparerLoader"
+				nameOfImagePreloaderContainer 	: "imagePreparerLoader",
+				wrapContainer :	'<div class="modalBoxCarouselItemContainer"></div>'
 			}, settings || {});
 			
 			
-			if( settings.loadImagePreparer["currentImageObj"] ){
-				
+			var imageObj = settings.loadImagePreparer["currentImageObj"];
+			
+			
+			if( imageObj ){
 				
 				jQuery(globaloptions.getStaticContentFromInnerContainer).css({ 
 					display : "block",
@@ -425,13 +428,29 @@
 					top : "-9999px"
 				});
 				
+				var getWidthOfCurrentImage 	= "";
+				var getHeightOfCurrentImage = "";
 				
-				var getWidthOfCurrentImage 	= jQuery(settings.loadImagePreparer["currentImageObj"]).width();
-				var getHeightOfCurrentImage = jQuery(settings.loadImagePreparer["currentImageObj"]).height();
-				
+				if( imageObj.size() == 1 ){
+					
+					getWidthOfCurrentImage 	= imageObj.width();
+					getHeightOfCurrentImage = imageObj.height();
+					
+				} else {
+					
+					imageObj.each(function(){
+						
+						if( jQuery(this).width() > getWidthOfCurrentImage ){
+							getWidthOfCurrentImage 	= jQuery(this).width();
+						}
+						
+						if( jQuery(this).height() > getHeightOfCurrentImage ){
+							getHeightOfCurrentImage = jQuery(this).height();
+						}
+					});
+				}
 				
 				jQuery(globaloptions.getStaticContentFromInnerContainer).removeAttr("style");
-				
 				
 				openModalBox({
 					type				: settings.type,
@@ -439,7 +458,7 @@
 					source 				: settings.source,
 					data				: settings.data,
 					loadImagePreparer 	: {
-						currentImageObj 				: settings.loadImagePreparer["currentImageObj"],
+						currentImageObj 				: imageObj,
 						widthOfImage					: getWidthOfCurrentImage,
 						heightOfImage					: getHeightOfCurrentImage,
 						finalizeModalBox 				: true,
