@@ -475,7 +475,11 @@
 		function addCloseButtonFunctionality(){
 			var createCloseButtonFunctionality = '';
 			createCloseButtonFunctionality += '<script type="text/javascript">';
-				createCloseButtonFunctionality += 'jQuery(document).ready(function(){ jQuery(".closeModalBox", "' + globaloptions.setModalboxContainer + '").click(function(){ jQuery(this).modalBox.close({layerContainer:\'' + globaloptions.setFaderLayer + '\', setModalboxContainer:\'' + globaloptions.setModalboxContainer + '\' }); }); });';
+				if( getCurrentVersionOfJQUERY == "1.2.6" ){
+					createCloseButtonFunctionality += 'jQuery(".closeModalBox", "' + globaloptions.setModalboxContainer + '").click(function(){ jQuery.fn.modalBox.close(); });';
+				} else {
+					createCloseButtonFunctionality += 'jQuery(".closeModalBox", "' + globaloptions.setModalboxContainer + '").live("click", function(){ jQuery.fn.modalBox.close(); });';
+				}
 			createCloseButtonFunctionality += '</script>';
 			jQuery(globaloptions.setModalboxContainer).append( createCloseButtonFunctionality );
 			
@@ -765,8 +769,8 @@
 				
 				if ( obsoleteBrowsers ) {
 					jQuery(".modalBoxIe6layerfix").css({
-						width 	: Math.abs( jQuery("body").width() - 1) + 'px',
-						height 	: Math.abs( jQuery("body").height() - 1) + 'px'
+						width 	: Math.abs( jQuery(window).width() - 1) + 'px',
+						height 	: Math.abs( jQuery(window).height() - 1) + 'px'
 					});
 				}
 				
