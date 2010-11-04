@@ -109,7 +109,6 @@
 			usejqueryuidragable					: false, //options: true, false (the modalbox is draggable, Requires jQuery v1.2.6 or later, jQuery UI  and components: jQuery UI Widget, jQuery UI Mouse, jQuery UI Draggable)
 			
 			callFunctionAfterSuccess			: null,
-			setWidthOfModalLayer				: null,
 			
 			directCall							: {
 				source 	: null, // put url here like http://www.yourdomain.de/test?param=1&param=2
@@ -545,24 +544,30 @@
 					
 					
 					var prepareCustomWidthOfModalBox = "";
+					var setModalboxClassName = "";
+					
 					if( settings.element ){
+						
 						if( jQuery(settings.element).hasClass("large") ){
-							var setModalboxClassName = 'large';
+							setModalboxClassName += 'large';
 						} else if( jQuery(settings.element).hasClass("medium") ){
-							var setModalboxClassName = 'medium';
+							setModalboxClassName += 'medium';
 						} else if( jQuery(settings.element).hasClass("small") ){
-							var setModalboxClassName = 'small';
+							setModalboxClassName += 'small';
 						} else if( settings.loadImagePreparer["nameOfImagePreloaderContainer"] ){
-							var setModalboxClassName = 'auto';
+							setModalboxClassName += 'auto';
 							prepareCustomWidthOfModalBox += 'width:' + Math.abs( settings.loadImagePreparer["widthOfImage"] + 40 ) + 'px; ';
 							prepareCustomWidthOfModalBox += 'height:' + Math.abs( settings.loadImagePreparer["heightOfImage"] + 40 ) + 'px; ';
-						} else {
-							var setModalboxClassName = '';
 						}
 						
 						if( jQuery(settings.element).hasClass("emphasis") ){
 							setModalboxClassName += ' emphasis';
 						}
+					}
+					
+					
+					if( globaloptions.customClassName ){
+						setModalboxClassName += ' ' + globaloptions.customClassName;
 					}
 					
 					
@@ -662,12 +667,31 @@
 						jQuery("body").prepend('<a class="modalBoxTopLink"></a>');
 					}
 					
+					// setPositionLeft
 					var setPositionLeft = parseInt( jQuery(window).width() - jQuery(globaloptions.setModalboxContainer).width() ) / 2;
 					if( setPositionLeft <= 0 ){
 						setPositionLeft = 0;
 					}
 					
+					if( globaloptions.positionLeft ){
+						setPositionLeft = globaloptions.positionLeft;
+					} else {
+						setPositionLeft = setPositionLeft + 'px';
+					}
+					
+					
+					// setPositionTop
 					var setPositionTop = parseInt( jQuery(window).height() - jQuery(globaloptions.setModalboxContainer).height() - 70 ) / 2;
+					
+					if( globaloptions.positionTop ){
+						setPositionTop = globaloptions.positionTop;
+					} else {
+						if( setPositionTop <= 0 ){
+							setPositionTop = globaloptions.minimalTopSpacingOfModalbox + 'px';
+						} else {
+							setPositionTop = setPositionTop + 'px';
+						}
+					}
 					
 					if ( obsoleteBrowsers ) {
 						
@@ -675,15 +699,15 @@
 						if( setPositionTop <= 0 ){
 							jQuery(globaloptions.setModalboxContainer).css({
 								position	: "absolute",
-								left		: setPositionLeft + 'px',
-								top			: globaloptions.minimalTopSpacingOfModalbox + 'px',
+								left		: setPositionLeft,
+								top			: setPositionTop,
 								display		: "block",
 								visibility	: "visible"
 							});
 						} else {
 							jQuery(globaloptions.setModalboxContainer).css({
 								position	: "absolute",
-								left		: setPositionLeft + 'px',
+								left		: setPositionLeft,
 								display		: "block",
 								visibility	: "visible"
 							});
@@ -699,8 +723,8 @@
 							
 							jQuery(globaloptions.setModalboxContainer).css({
 								position	: "absolute",
-								left		: setPositionLeft + 'px',
-								top			: globaloptions.minimalTopSpacingOfModalbox + 'px',
+								left		: setPositionLeft,
+								top			: setPositionTop,
 								display		: "block",
 								visibility	: "visible"
 							});
@@ -712,10 +736,10 @@
 						} else {
 						
 							jQuery(globaloptions.setModalboxContainer).css({
-								position: "fixed",
-								left	: setPositionLeft + 'px',
-								top		: setPositionTop + 'px',
-								display	: "block",
+								position	: "fixed",
+								left		: setPositionLeft,
+								top			: setPositionTop,
+								display		: "block",
 								visibility	: "visible"
 							});
 						}
@@ -769,8 +793,8 @@
 				
 				if ( obsoleteBrowsers ) {
 					jQuery(".modalBoxIe6layerfix").css({
-						width 	: Math.abs( jQuery(window).width() - 1) + 'px',
-						height 	: Math.abs( jQuery(window).height() - 1) + 'px'
+						width 	: Math.abs( jQuery("body").width() - 1) + 'px',
+						height 	: Math.abs( jQuery("body").height() - 1) + 'px'
 					});
 				}
 				
@@ -982,6 +1006,11 @@
 		setModalboxLayoutContainer_End		: '</div></div></div><div class="modalboxStyleContainerBottomLeft"><div class="modalboxStyleContainerBottomRight"></div></div>',
 		setModalboxLayoutContainer_Begin_ObsoleteBrowsers : '<div class="modalboxStyleContainerTopRight"><div class="modalboxStyleContainerContent">',
 		setModalboxLayoutContainer_End_ObsoleteBrowsers : '</div></div><div class="modalboxStyleContainerBottomRight"></div><div class="modalboxStyleContainerTopLeft"></div><div class="modalboxStyleContainerBottomLeft"></div>',
+		
+		setWidthOfModalLayer				: null,
+		customClassName 					: null,
+		positionLeft 						: null,
+		positionTop 						: null,
 		
 		localizedStrings					: {
 			messageCloseWindow					: 'Close Window',

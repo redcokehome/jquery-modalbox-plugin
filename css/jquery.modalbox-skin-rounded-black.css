@@ -5,6 +5,9 @@ div#modalBox div#modalBoxBody div#modalBoxCloseButton {
 	right:-5px; 
 	width:29px;
 }
+* html div#modalBox div#modalBoxBody div#modalBoxCloseButton {
+	right:25px;
+}
 div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox,
 div#modalBox div#modalBoxBody #modalBoxCloseButton a.closeModalBox span {
 	text-decoration:none;
