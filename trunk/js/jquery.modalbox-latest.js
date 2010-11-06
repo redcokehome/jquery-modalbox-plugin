@@ -682,12 +682,14 @@
 					
 					// setPositionTop
 					var setPositionTop = parseInt( jQuery(window).height() - jQuery(globaloptions.setModalboxContainer).height() - 70 ) / 2;
+					var enableClassicScrolling = false;
 					
 					if( globaloptions.positionTop ){
 						setPositionTop = globaloptions.positionTop;
 					} else {
 						if( setPositionTop <= 0 ){
 							setPositionTop = globaloptions.minimalTopSpacingOfModalbox + 'px';
+							enableClassicScrolling = true;
 						} else {
 							setPositionTop = setPositionTop + 'px';
 						}
@@ -696,7 +698,8 @@
 					if ( obsoleteBrowsers ) {
 						
 						// IE6 fix
-						if( setPositionTop <= 0 ){
+						if( enableClassicScrolling ){
+							
 							jQuery(globaloptions.setModalboxContainer).css({
 								position	: "absolute",
 								left		: setPositionLeft,
@@ -704,7 +707,9 @@
 								display		: "block",
 								visibility	: "visible"
 							});
+							
 						} else {
+							
 							jQuery(globaloptions.setModalboxContainer).css({
 								position	: "absolute",
 								left		: setPositionLeft,
@@ -719,29 +724,53 @@
 						
 					} else {
 						
-						if( setPositionTop <= 0 ){
+						if( enableClassicScrolling ){
 							
-							jQuery(globaloptions.setModalboxContainer).css({
-								position	: "absolute",
-								left		: setPositionLeft,
-								top			: setPositionTop,
-								display		: "block",
-								visibility	: "visible"
-							});
+							if( globaloptions.fadeInActive ){
+								
+								jQuery(globaloptions.setModalboxContainer).css({
+									position	: "absolute",
+									left		: setPositionLeft,
+									top			: setPositionTop,
+									visibility	: "visible"
+								}).fadeIn( globaloptions.fadeInSpeed );
+								
+							} else {
+								
+								jQuery(globaloptions.setModalboxContainer).css({
+									position	: "absolute",
+									left		: setPositionLeft,
+									top			: setPositionTop,
+									display		: "block",
+									visibility	: "visible"
+								});
+							}
 							
 							simpleScrollTo({
 								targetElement : "a.modalBoxTopLink"
 							});
 							
 						} else {
-						
-							jQuery(globaloptions.setModalboxContainer).css({
-								position	: "fixed",
-								left		: setPositionLeft,
-								top			: setPositionTop,
-								display		: "block",
-								visibility	: "visible"
-							});
+							
+							if( globaloptions.fadeInActive ){
+								
+								jQuery(globaloptions.setModalboxContainer).css({
+									position	: "fixed",
+									left		: setPositionLeft,
+									top			: setPositionTop,
+									visibility	: "visible"
+								}).fadeIn( globaloptions.fadeInSpeed );
+								
+							} else {
+								
+								jQuery(globaloptions.setModalboxContainer).css({
+									position	: "fixed",
+									left		: setPositionLeft,
+									top			: setPositionTop,
+									display		: "block",
+									visibility	: "visible"
+								});
+							}
 						}
 					}
 					
@@ -814,7 +843,12 @@
 				});
 				
 			} else if ( currentFaderObj.size() != 0 && !currentFaderObj.is(':visible') ){
-				currentFaderObj.show();
+			
+				if( globaloptions.fadeInActive ){
+					currentFaderObj.fadeIn( globaloptions.fadeInSpeed );
+				} else {
+					currentFaderObj.show();
+				}
 			}
 		}
 		/************ showFaderLayer - END ************/
@@ -898,8 +932,17 @@
 		settings = jQuery.extend({}, jQuery.fn.modalBox.defaults, settings);
 		
 		if( settings.setFaderLayer && settings.setModalboxContainer ){
-			jQuery(settings.setFaderLayer).remove();
-			jQuery(settings.setModalboxContainer).remove();
+			
+			var containerObj = jQuery(settings.setFaderLayer + ', ' + settings.setModalboxContainer);
+			
+			if( settings.fadeOutActive ){
+				containerObj.fadeOut( settings.fadeOutSpeed, function(){
+					jQuery(this).remove();
+				});
+			} else {
+				containerObj.remove();
+			}
+			
 			jQuery("iframe.modalBoxIe6layerfix").remove();
 		}
 	};
@@ -983,6 +1026,7 @@
 				preCacheContainer += '</div>';
 				
 				jQuery("body").append(preCacheContainer);
+				
 				jQuery(settings.setModalboxContainer).show();
 			}
 		}
@@ -1011,6 +1055,12 @@
 		customClassName 					: null,
 		positionLeft 						: null,
 		positionTop 						: null,
+		
+		fadeInActive						: true,
+		fadeInSpeed							: "fast", //options: string or integer ("fast" or 600)
+		
+		fadeOutActive						: true,
+		fadeOutSpeed						: "fast", //options: string or integer ("fast" or 600)
 		
 		localizedStrings					: {
 			messageCloseWindow					: 'Close Window',
