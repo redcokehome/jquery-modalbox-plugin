@@ -1,5 +1,5 @@
 /*
-* jQuery modalBox plugin v1.1.2 <http://code.google.com/p/jquery-modalbox-plugin/> 
+* jQuery modalBox plugin <trunk> <http://code.google.com/p/jquery-modalbox-plugin/> 
 * @requires jQuery v1.3.2 or later 
 * is released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
 */
@@ -145,7 +145,10 @@
 			source 	: null, // put url here like http://www.yourdomain.de/test?param=1&param=2
 			data	: null, // put content here like data : '<div class="testclass">test</div>'
 			element	: null // define identifyer of source container here to get html content, can be id or class like  like '#sourcecontainer'
-		}
+		},
+		
+		ajax_type							: 'POST', // The type of request to make ("POST" or "GET"), default is "POST". Note: Other HTTP request methods, such as PUT and DELETE, can also be used here, but they are not supported by all browsers.
+		ajax_contentType					: 'application/x-www-form-urlencoded; charset=utf-8' // examples : charset=utf-8, charset=ISO-8859-1
 		
 	};
 	
@@ -654,9 +657,10 @@
 						} case 'ajax':{
 						
 							jQuery.ajax({
-								type	: 'POST',
-								url		: settings.source,
-								data	: settings.data,
+								type : globaloptions.ajax_type,
+								url	: settings.source,
+								data : settings.data,
+								contentType : globaloptions.ajax_contentType,
 								success	: function(data, textStatus){
 									
 									jQuery(globaloptions.setAjaxLoader).hide();
@@ -665,7 +669,7 @@
 									
 									globaloptions.callFunctionAfterSuccess();
 								},
-								error	: function(XMLHttpRequest, textStatus, errorThrown){
+								error : function(XMLHttpRequest, textStatus, errorThrown){
 									ajaxRedirect({ 
 										ar_XMLHttpRequest	: XMLHttpRequest,
 										ar_textStatus		: textStatus,
