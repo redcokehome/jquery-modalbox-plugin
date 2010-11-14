@@ -216,7 +216,9 @@
 		/************ initializeModalBox - BEGIN ************/
 		var doNotBindEventsOnWindowResize = false;
 		jQuery(window).resize(function(){
-			centerModalBox();
+			centerModalBox({
+				isResized : true
+			});
 			doNotBindEventsOnWindowResize = true;
 		});
 		
@@ -710,141 +712,157 @@
 		
 		
 		/************ centerModalBox - BEGIN ************/
-		function centerModalBox(){
+		function centerModalBox(settings){
+		
+		
+			var settings = jQuery.extend({
+				isResized : false
+			}, settings || {} );
 			
-			if( jQuery(globaloptions.setNameOfPreCacheContainer).length == 0 ){
+			
+			var modalboxContainerObj = jQuery(globaloptions.setModalboxContainer);
+			
+			
+			if( jQuery(globaloptions.setNameOfPreCacheContainer).length == 0 && modalboxContainerObj.length != 0 ){
 				
-				var modalboxContainerObj = jQuery(globaloptions.setModalboxContainer);
 				
-				if( modalboxContainerObj.length != 0 ){
+				if( jQuery("body a.modalBoxTopLink").length == 0 ){
+					jQuery("body").prepend('<a class="modalBoxTopLink"></a>');
+				}
+				
+				
+				// default settings
+				var scrollToTop = false;
+				var positionAttr = 'absolute';
+				var setPositionTop = 0;
+				var getModalboxContainerWidth = modalboxContainerObj.width();
+				var getModalboxContainerHeight = modalboxContainerObj.height();
+				
+				
+				
+				/*~~~ setPositionLeft / BEGIN ~~~*/
+				var setPositionLeft = parseInt( jQuery(window).width() - getModalboxContainerWidth ) / 2;
+				if( setPositionLeft <= 0 ){
+					setPositionLeft = 0;
+				}
+				
+				if( globaloptions.positionLeft ){
+					setPositionLeft = globaloptions.positionLeft + 'px';
+				} else {
+					setPositionLeft = setPositionLeft + 'px';
+				}
+				/*~~~ setPositionLeft / END ~~~*/
+				
+				
+				
+				/*~~~ setPositionTop / BEGIN ~~~*/
+				if( globaloptions.positionTop ){
 					
+					setPositionTop = parseInt( 
+						jQuery(window).height() - getModalboxContainerHeight
+					);
 					
-					if( jQuery("body a.modalBoxTopLink").length == 0 ){
-						jQuery("body").prepend('<a class="modalBoxTopLink"></a>');
+					if( setPositionTop > parseInt( globaloptions.positionTop ) ){
+						positionAttr = 'fixed';
 					}
 					
+					setPositionTop = globaloptions.positionTop + 'px';
+				
+				} else {
 					
-					// default settings
-					var scrollToTop = false;
-					var positionAttr = 'absolute';
-					var setPositionTop = 0;
-					var getModalboxContainerWidth = modalboxContainerObj.width();
-					var getModalboxContainerHeight = modalboxContainerObj.height();
+					setPositionTop = parseInt( jQuery(window).height() - getModalboxContainerHeight - 70 ) / 2;
 					
+					if( setPositionTop <= 0 ){
 					
-					
-					/*~~~ setPositionLeft / BEGIN ~~~*/
-					var setPositionLeft = parseInt( jQuery(window).width() - getModalboxContainerWidth ) / 2;
-					if( setPositionLeft <= 0 ){
-						setPositionLeft = 0;
-					}
-					
-					if( globaloptions.positionLeft ){
-						setPositionLeft = globaloptions.positionLeft + 'px';
+						setPositionTop = globaloptions.minimalTopSpacingOfModalbox + 'px';
+						scrollToTop = true;
+						
 					} else {
-						setPositionLeft = setPositionLeft + 'px';
+						
+						setPositionTop = setPositionTop + 'px';
+						positionAttr = 'fixed';
 					}
-					/*~~~ setPositionLeft / END ~~~*/
+				}
+				/*~~~ setPositionTop / END ~~~*/
+				
+				
+				/*~~~ initPositioning / BEGIN ~~~*/
+				function initPositioning(){
 					
 					
-					
-					/*~~~ setPositionTop / BEGIN ~~~*/
-					if( globaloptions.positionTop ){
-						
-						setPositionTop = parseInt( 
-							jQuery(window).height() - getModalboxContainerHeight
-						);
-						
-						if( setPositionTop > parseInt( globaloptions.positionTop ) ){
-							positionAttr = 'fixed';
-						}
-						
-						setPositionTop = globaloptions.positionTop + 'px';
-					
-					} else {
-						
-						setPositionTop = parseInt( jQuery(window).height() - getModalboxContainerHeight - 70 ) / 2;
-						
-						if( setPositionTop <= 0 ){
-						
-							setPositionTop = globaloptions.minimalTopSpacingOfModalbox + 'px';
-							scrollToTop = true;
+					if( globaloptions.fadeInActive && !globaloptions.obsoleteIE678Browser ){
+							
+						if( modalboxContainerObj.hasClass("modalboxFadingSuccessfully") ){
+							
+							modalboxContainerObj.css({
+								position	: positionAttr,
+								left		: setPositionLeft,
+								top			: setPositionTop,
+								display		: "block",
+								visibility	: "visible"
+							});
 							
 						} else {
 							
-							setPositionTop = setPositionTop + 'px';
-							positionAttr = 'fixed';
+							// classic fadeOut - transparency problems in ie browsers
+							modalboxContainerObj.css({
+								position	: positionAttr,
+								left		: setPositionLeft,
+								top			: setPositionTop,
+								visibility	: "visible"
+							}).fadeIn( globaloptions.fadeInSpeed, function(){
+								jQuery(this).addClass("modalboxFadingSuccessfully");
+							});
 						}
-					}
-					/*~~~ setPositionTop / END ~~~*/
-					
-					
-					
-					/*~~~ init showFadingLayer / BEGIN ~~~*/
-					showFadingLayer({
 						
+					} else {
+						
+						modalboxContainerObj.css({
+							position	: positionAttr,
+							left		: setPositionLeft,
+							top			: setPositionTop,
+							display		: "block",
+							visibility	: "visible"
+						});
+						
+					}
+					
+					
+					if( scrollToTop && !modalboxContainerObj.hasClass("modalboxScrollingSuccessfully") ){
+						modalboxContainerObj.addClass("modalboxScrollingSuccessfully");
+						simpleScrollTo();
+					}
+					
+					
+					if( !settings.isResized ){
+						
+						if( globaloptions.usejqueryuidragable ){
+							modalboxContainerObj.draggable("destroy").draggable({ 
+								opacity: false, 
+								iframeFix: true, 
+								refreshPositions: true 
+							});
+						}
+						
+						globaloptions.callFunctionAfterSuccess();
+					}
+				}
+				/*~~~ initPositioning / END ~~~*/
+				
+				
+				/*~~~ init showFadingLayer / BEGIN ~~~*/
+				if( !settings.isResized ){
+					
+					showFadingLayer({
 						callFunctionAfterFading : function(){
-							
-							if( globaloptions.fadeInActive && !globaloptions.obsoleteIE678Browser ){
-									
-								if( modalboxContainerObj.hasClass("modalboxFadingSuccessfully") ){
-									
-									modalboxContainerObj.css({
-										position	: positionAttr,
-										left		: setPositionLeft,
-										top			: setPositionTop,
-										display		: "block",
-										visibility	: "visible"
-									});
-									
-								} else {
-									
-									// classic fadeOut - transparency problems in ie browsers
-									modalboxContainerObj.css({
-										position	: positionAttr,
-										left		: setPositionLeft,
-										top			: setPositionTop,
-										visibility	: "visible"
-									}).fadeIn( globaloptions.fadeInSpeed, function(){
-										jQuery(this).addClass("modalboxFadingSuccessfully");
-									});
-								}
-								
-							} else {
-								
-								modalboxContainerObj.css({
-									position	: positionAttr,
-									left		: setPositionLeft,
-									top			: setPositionTop,
-									display		: "block",
-									visibility	: "visible"
-								});
-								
-							}
-							
-							
-							if( globaloptions.usejqueryuidragable ){
-								modalboxContainerObj.draggable("destroy").draggable({ 
-									opacity: false, 
-									iframeFix: true, 
-									refreshPositions: true 
-								});
-							}
-							
-							if( scrollToTop && !modalboxContainerObj.hasClass("modalboxScrollingSuccessfully") ){
-								modalboxContainerObj.addClass("modalboxScrollingSuccessfully");
-								simpleScrollTo();
-							}
-							
-							
-							globaloptions.callFunctionAfterSuccess();
-							
-							
+							initPositioning();
 						}
 					});
-					/*~~~ init showFadingLayer / END ~~~*/
 					
+				} else {
+					initPositioning();
 				}
+				/*~~~ init showFadingLayer / END ~~~*/
 				
 			}
 		}
@@ -891,9 +909,7 @@
 				
 				jQuery(window).resize(function(){
 					if ( jQuery(globaloptions.setFaderLayer).is(':visible') ) {
-						showFadingLayer({
-							callFunctionAfterFading : settings.callFunctionAfterFading
-						});
+						showFadingLayer();
 					}
 				});
 				
