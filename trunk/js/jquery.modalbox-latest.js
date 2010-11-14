@@ -86,7 +86,7 @@
 	// Default options
 	var defaults = {
 		
-		obsoleteBrowsers 					: ((jQuery.browser.msie && parseInt(jQuery.browser.version) < 7) ? true : false ),
+		obsoleteIE678Browser 				: ((jQuery.browser.msie && parseInt(jQuery.browser.version) < 9) ? true : false ),
 		
 		setModalboxContainer				: '#modalBox',
 		setModalboxBodyContainer			: '#modalBoxBody',
@@ -99,11 +99,34 @@
 		setNameOfPreCacheContainer			: '#modalboxPreCacheContainer',
 		setNameOfGalleryImage				: 'modalgallery',
 		
-		// Note: the height of "div.modalboxStyleContainerTopLeft" will be set in function centerModalBox() for obsolete browsers like ie6
-		setModalboxLayoutContainer_Begin	: '<div class="modalboxStyleContainerTopLeft"><div class="modalboxStyleContainerTopRight"><div class="modalboxStyleContainerContent">',
-		setModalboxLayoutContainer_End		: '</div></div></div><div class="modalboxStyleContainerBottomLeft"><div class="modalboxStyleContainerBottomRight"></div></div>',
-		setModalboxLayoutContainer_Begin_ObsoleteBrowsers : '<div class="modalboxStyleContainerTopRight"><div class="modalboxStyleContainerContent">',
-		setModalboxLayoutContainer_End_ObsoleteBrowsers : '</div></div><div class="modalboxStyleContainerBottomRight"></div><div class="modalboxStyleContainerTopLeft"></div><div class="modalboxStyleContainerBottomLeft"></div>',
+		
+		/*
+			Layout Container:
+			--------------------------------------------
+			<div class="modalboxStyleContainer_surface_left">
+				<div class="modalboxStyleContainer_surface_right">
+					<div class="modalboxStyleContainerContent">
+						<div class="modalBoxBodyContent">
+							
+							Content
+							
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="modalboxStyleContainer_corner_topLeft"><!-- - --></div>
+			<div class="modalboxStyleContainer_corner_topRight"><!-- - --></div>
+
+			<div class="modalboxStyleContainer_corner_bottomLeft"><!-- - --></div>
+			<div class="modalboxStyleContainer_corner_bottomRight"><!-- - --></div>
+
+			<div class="modalboxStyleContainer_surface_top"><div class="modalboxStyleContainer_surface_body"><!-- - --></div></div>
+			<div class="modalboxStyleContainer_surface_bottom"><div class="modalboxStyleContainer_surface_body"><!-- - --></div></div>
+		*/
+		setModalboxLayoutContainer_Begin	: '<div class="modalboxStyleContainer_surface_left"><div class="modalboxStyleContainer_surface_right"><div class="modalboxStyleContainerContent"><div class="modalBoxBodyContent">',
+		setModalboxLayoutContainer_End		: '</div></div></div></div><div class="modalboxStyleContainer_corner_topLeft"><!-- - --></div><div class="modalboxStyleContainer_corner_topRight"><!-- - --></div><div class="modalboxStyleContainer_corner_bottomLeft"><!-- - --></div><div class="modalboxStyleContainer_corner_bottomRight"><!-- - --></div><div class="modalboxStyleContainer_surface_top"><div class="modalboxStyleContainer_surface_body"><!-- - --></div></div><div class="modalboxStyleContainer_surface_bottom"><div class="modalboxStyleContainer_surface_body"><!-- - --></div></div>',
+		
 		
 		setWidthOfModalLayer				: null,
 		customClassName 					: null,
@@ -238,13 +261,13 @@
 					var type		= 'ajax';
 					isFormSubmit 	= true;
 					currentEvent.preventDefault();
-				} else if ( jQuery("input[name$='" + globaloptions.setNameOfHiddenAjaxInputField + "']", elementObj).size() != 0 ) {
+				} else if ( jQuery("input[name$='" + globaloptions.setNameOfHiddenAjaxInputField + "']", elementObj).length != 0 ) {
 					var source 		= jQuery("input[name$='" + globaloptions.setNameOfHiddenAjaxInputField + "']", elementObj).val();
 					var data		= '';
 					var type		= 'ajax';
 					currentEvent.preventDefault();
-				} else if ( jQuery(globaloptions.getStaticContentFromInnerContainer, elementObj).size() != 0 ) {
-					if ( jQuery(globaloptions.getStaticContentFromInnerContainer + " img." + globaloptions.setNameOfGalleryImage, elementObj).size() != 0 ) {
+				} else if ( jQuery(globaloptions.getStaticContentFromInnerContainer, elementObj).length != 0 ) {
+					if ( jQuery(globaloptions.getStaticContentFromInnerContainer + " img." + globaloptions.setNameOfGalleryImage, elementObj).length != 0 ) {
 						var currentImageObj = jQuery(globaloptions.getStaticContentFromInnerContainer + " img." + globaloptions.setNameOfGalleryImage, elementObj);
 					}
 					var source 		= '';
@@ -400,7 +423,7 @@
 					errorMessageContainer += '</div></div>';
 					
 					jQuery(settings.targetContainer).removeAttr("style").html( errorMessageContainer );
-					if( jQuery(settings.targetContainer).parents(globaloptions.setModalboxContainer).size() > 0 ){
+					if( jQuery(settings.targetContainer).parents(globaloptions.setModalboxContainer).length > 0 ){
 						jQuery(globaloptions.setAjaxLoader).remove();
 						centerModalBox();
 					}
@@ -477,7 +500,7 @@
 				var getWidthOfCurrentImage 	= 0;
 				var getHeightOfCurrentImage = 0;
 				
-				if( imageObj.size() == 1 ){
+				if( imageObj.length == 1 ){
 					
 					getWidthOfCurrentImage 	= parseInt( imageObj.width() );
 					getHeightOfCurrentImage = parseInt( imageObj.height() );
@@ -592,8 +615,8 @@
 							setModalboxClassName += 'small';
 						} else if( settings.loadImagePreparer["nameOfImagePreloaderContainer"] ){
 							setModalboxClassName += 'auto';
-							prepareCustomWidthOfModalBox += 'width:' + Math.abs( settings.loadImagePreparer["widthOfImage"] + 40 ) + 'px; ';
-							prepareCustomWidthOfModalBox += 'height:' + Math.abs( settings.loadImagePreparer["heightOfImage"] + 40 ) + 'px; ';
+							//prepareCustomWidthOfModalBox += 'width:' + settings.loadImagePreparer["widthOfImage"] + 'px; ';
+							//prepareCustomWidthOfModalBox += 'height:' + settings.loadImagePreparer["heightOfImage"] + 'px; ';
 						}
 						
 						if( jQuery(settings.element).hasClass("emphasis") ){
@@ -613,9 +636,9 @@
 					
 					
 					//~~~~ create Modalbox first - BEGIN ~~~~//
-					if( jQuery(globaloptions.setModalboxContainer).size() == 0 ){
+					if( jQuery(globaloptions.setModalboxContainer).length == 0 ){
 						
-						showFaderLayer();
+						showFadingLayer();
 						
 						var createModalboxContainer = modalboxBuilder({
 							customStyles : 'class="' + setModalboxClassName + '" style="' + prepareCustomWidthOfModalBox + '"'
@@ -642,15 +665,11 @@
 					switch (settings.type) {
 						
 						case 'static':{
-						
-							jQuery(globaloptions.setAjaxLoader).hide();
-							jQuery(globaloptions.setModalboxBodyContentContainer, globaloptions.setModalboxContainer).html(settings.data);
 							
-							if ( globaloptions.obsoleteBrowsers ) {
+							jQuery(globaloptions.setAjaxLoader).fadeOut("fast", function(){
+								jQuery(globaloptions.setModalboxBodyContentContainer, globaloptions.setModalboxContainer).html(settings.data);
 								centerModalBox();
-							}
-							
-							globaloptions.callFunctionAfterSuccess();
+							});
 							
 							break;
 							
@@ -663,11 +682,11 @@
 								contentType : globaloptions.ajax_contentType,
 								success	: function(data, textStatus){
 									
-									jQuery(globaloptions.setAjaxLoader).hide();
-									jQuery(globaloptions.setModalboxBodyContentContainer, globaloptions.setModalboxContainer).append(data);
-									centerModalBox();
+									jQuery(globaloptions.setAjaxLoader).fadeOut("fast", function(){
+										jQuery(globaloptions.setModalboxBodyContentContainer, globaloptions.setModalboxContainer).html(data);
+										centerModalBox();
+									});
 									
-									globaloptions.callFunctionAfterSuccess();
 								},
 								error : function(XMLHttpRequest, textStatus, errorThrown){
 									ajaxRedirect({ 
@@ -682,9 +701,7 @@
 							break;
 						}
 					}
-					if ( !globaloptions.obsoleteBrowsers ) {
-						centerModalBox();
-					}
+					
 				}
 			}
 		}
@@ -695,14 +712,14 @@
 		/************ centerModalBox - BEGIN ************/
 		function centerModalBox(){
 			
-			if( jQuery(globaloptions.setNameOfPreCacheContainer).size() == 0 ){
+			if( jQuery(globaloptions.setNameOfPreCacheContainer).length == 0 ){
 				
 				var modalboxContainerObj = jQuery(globaloptions.setModalboxContainer);
 				
-				if( modalboxContainerObj.size() != 0 ){
+				if( modalboxContainerObj.length != 0 ){
 					
 					
-					if( jQuery("body a.modalBoxTopLink").size() == 0 ){
+					if( jQuery("body a.modalBoxTopLink").length == 0 ){
 						jQuery("body").prepend('<a class="modalBoxTopLink"></a>');
 					}
 					
@@ -711,11 +728,13 @@
 					var scrollToTop = false;
 					var positionAttr = 'absolute';
 					var setPositionTop = 0;
+					var getModalboxContainerWidth = modalboxContainerObj.width();
+					var getModalboxContainerHeight = modalboxContainerObj.height();
 					
 					
 					
 					/*~~~ setPositionLeft / BEGIN ~~~*/
-					var setPositionLeft = parseInt( jQuery(window).width() - modalboxContainerObj.width() ) / 2;
+					var setPositionLeft = parseInt( jQuery(window).width() - getModalboxContainerWidth ) / 2;
 					if( setPositionLeft <= 0 ){
 						setPositionLeft = 0;
 					}
@@ -733,7 +752,7 @@
 					if( globaloptions.positionTop ){
 						
 						setPositionTop = parseInt( 
-							jQuery(window).height() - modalboxContainerObj.height()
+							jQuery(window).height() - getModalboxContainerHeight
 						);
 						
 						if( setPositionTop > parseInt( globaloptions.positionTop ) ){
@@ -744,7 +763,7 @@
 					
 					} else {
 						
-						setPositionTop = parseInt( jQuery(window).height() - modalboxContainerObj.height() - 70 ) / 2;
+						setPositionTop = parseInt( jQuery(window).height() - getModalboxContainerHeight - 70 ) / 2;
 						
 						if( setPositionTop <= 0 ){
 						
@@ -761,22 +780,37 @@
 					
 					
 					
-					if ( globaloptions.obsoleteBrowsers ) {
+					/*~~~ init showFadingLayer / BEGIN ~~~*/
+					showFadingLayer({
 						
-						// IE6 fix
-						modalboxContainerObj.css({
-							position	: "absolute",
-							left		: setPositionLeft,
-							top			: setPositionTop,
-							display		: "block",
-							visibility	: "visible"
-						});
-						
-					} else {
-						
-						if( globaloptions.fadeInActive  ){
+						callFunctionAfterFading : function(){
 							
-							if( modalboxContainerObj.hasClass("modalboxFadingSuccessfully") ){
+							if( globaloptions.fadeInActive && !globaloptions.obsoleteIE678Browser ){
+									
+								if( modalboxContainerObj.hasClass("modalboxFadingSuccessfully") ){
+									
+									modalboxContainerObj.css({
+										position	: positionAttr,
+										left		: setPositionLeft,
+										top			: setPositionTop,
+										display		: "block",
+										visibility	: "visible"
+									});
+									
+								} else {
+									
+									// classic fadeOut - transparency problems in ie browsers
+									modalboxContainerObj.css({
+										position	: positionAttr,
+										left		: setPositionLeft,
+										top			: setPositionTop,
+										visibility	: "visible"
+									}).fadeIn( globaloptions.fadeInSpeed, function(){
+										jQuery(this).addClass("modalboxFadingSuccessfully");
+									});
+								}
+								
+							} else {
 								
 								modalboxContainerObj.css({
 									position	: positionAttr,
@@ -786,62 +820,45 @@
 									visibility	: "visible"
 								});
 								
-							} else {
-								
-								modalboxContainerObj.css({
-									position	: positionAttr,
-									left		: setPositionLeft,
-									top			: setPositionTop,
-									visibility	: "visible"
-								}).fadeIn( globaloptions.fadeInSpeed, function(){
-									jQuery(this).addClass("modalboxFadingSuccessfully");
+							}
+							
+							
+							if( globaloptions.usejqueryuidragable ){
+								modalboxContainerObj.draggable("destroy").draggable({ 
+									opacity: false, 
+									iframeFix: true, 
+									refreshPositions: true 
 								});
 							}
 							
-						} else {
+							if( scrollToTop && !modalboxContainerObj.hasClass("modalboxScrollingSuccessfully") ){
+								modalboxContainerObj.addClass("modalboxScrollingSuccessfully");
+								simpleScrollTo();
+							}
 							
-							modalboxContainerObj.css({
-								position	: positionAttr,
-								left		: setPositionLeft,
-								top			: setPositionTop,
-								display		: "block",
-								visibility	: "visible"
-							});
+							
+							globaloptions.callFunctionAfterSuccess();
+							
 							
 						}
-					}
+					});
+					/*~~~ init showFadingLayer / END ~~~*/
 					
-					
-					if( globaloptions.usejqueryuidragable ){
-						modalboxContainerObj.draggable("destroy").draggable({ 
-							opacity: false, 
-							iframeFix: true, 
-							refreshPositions: true 
-						});
-					}
-					
-					
-					if( scrollToTop && !modalboxContainerObj.hasClass("modalboxScrollingSuccessfully") ){
-						modalboxContainerObj.addClass("modalboxScrollingSuccessfully");
-						simpleScrollTo();
-					}
-					
-					
-					showFaderLayer();
 				}
 				
-				if ( globaloptions.obsoleteBrowsers ) {
-					var getHeightOfTopRightContainer = jQuery("div.modalboxStyleContainerTopRight", globaloptions.setModalboxContainer).height();
-					jQuery("div.modalboxStyleContainerTopLeft", globaloptions.setModalboxContainer).height( getHeightOfTopRightContainer );
-				}
 			}
 		}
 		/************ centerModalBox - END ************/
 		
 		
 		
-		/************ showFaderLayer - BEGIN ************/
-		function showFaderLayer(){
+		/************ showFadingLayer - BEGIN ************/
+		function showFadingLayer(settings){
+			
+			
+			var settings = jQuery.extend({//defaults
+				callFunctionAfterFading : function(){}
+			}, settings || {} );
 		
 			
 			if( globaloptions.setTypeOfFadingLayer == "white" ){
@@ -856,21 +873,15 @@
 			
 			
 			var currentFaderObj = jQuery(globaloptions.setFaderLayer);
-				
-			if ( currentFaderObj.size() == 0 ) {
+			
+			
+			if ( currentFaderObj.length == 0 ) {
 				
 				var prepareNameOfFadingLayer = jQuery.fn.modalBox.cleanupSelectorName({
 					replaceValue : globaloptions.setFaderLayer
 				});
 				
-				jQuery("body").append('<div id="' + prepareNameOfFadingLayer + '" style="' + setStyleOfFadingLayer + '"></div><iframe class="modalBoxIe6layerfix"></iframe>');
-				
-				if ( globaloptions.obsoleteBrowsers ) {
-					jQuery(".modalBoxIe6layerfix").css({
-						width 	: Math.abs( jQuery("body").width() - 1) + 'px',
-						height 	: Math.abs( jQuery("body").height() - 1) + 'px'
-					});
-				}
+				jQuery("body").append('<div id="' + prepareNameOfFadingLayer + '" style="' + setStyleOfFadingLayer + '"></div>');
 				
 				if( !globaloptions.killModalboxWithCloseButtonOnly ){
 					jQuery(globaloptions.setFaderLayer).click(function(){
@@ -880,20 +891,29 @@
 				
 				jQuery(window).resize(function(){
 					if ( jQuery(globaloptions.setFaderLayer).is(':visible') ) {
-						showFaderLayer();
+						showFadingLayer({
+							callFunctionAfterFading : settings.callFunctionAfterFading
+						});
 					}
 				});
 				
-			} else if ( currentFaderObj.size() != 0 && !currentFaderObj.is(':visible') ){
+			} else if ( currentFaderObj.length != 0 && !currentFaderObj.is(':visible') ){
 				
 				if( globaloptions.fadeInActive ){
-					currentFaderObj.fadeIn( globaloptions.fadeInSpeed );
+					
+					currentFaderObj.fadeIn( globaloptions.fadeInSpeed, function(){
+						settings.callFunctionAfterFading();
+					});
+					
 				} else {
-					currentFaderObj.show();
+					
+					currentFaderObj.show("fast", function(){
+						settings.callFunctionAfterFading();
+					});
 				}
 			}
 		}
-		/************ showFaderLayer - END ************/
+		/************ showFadingLayer - END ************/
 		
 	};
 	
@@ -938,28 +958,13 @@
 		var createModalboxContainer = '';
 		createModalboxContainer += '<div id="' + prepareNameOfModalboxContainer + '"' + settings.customStyles + '>';
 			createModalboxContainer += '<div id="' + prepareNameOfModalboxBodyContainer + '">';
-				
-				/* Default Design, Part 1 - BEGIN */
-				if ( settings.obsoleteBrowsers ) {
-					createModalboxContainer += settings.setModalboxLayoutContainer_Begin_ObsoleteBrowsers;
-				} else {
-					createModalboxContainer += settings.setModalboxLayoutContainer_Begin;
-				}
-				/* Default Design, Part 1 - END */
+				createModalboxContainer += settings.setModalboxLayoutContainer_Begin;
 					
 					createModalboxContainer += '<div class="' + prepareNameOfModalboxContentContainer + '">';
 						createModalboxContainer += '<div id="' + prepareNameOfAjaxLoader + '">' + settings.localizedStrings["messageAjaxLoader"] + '</div>';
 					createModalboxContainer += '</div>';
 					
-				/* Default Design, Part 2 - BEGIN */
-				if ( settings.obsoleteBrowsers ) {
-					createModalboxContainer += settings.setModalboxLayoutContainer_End_ObsoleteBrowsers;
-				} else {
-					createModalboxContainer += settings.setModalboxLayoutContainer_End;
-				}
-				/* Default Design, Part 2 - END */
-				
-				//createModalboxContainer += '<div id="' + prepareNameOfCloseButtonContainer + '"><a href="javascript:closeModalBox({layerContainer:\'' + settings.setFaderLayer + '\', setModalboxContainer:\'' + settings.setModalboxContainer + '\' });" class="closeModalBox"><span class="closeModalBox">' + settings.localizedStrings["messageCloseWindow"] + '</span></a></div>';
+				createModalboxContainer += settings.setModalboxLayoutContainer_End;
 				createModalboxContainer += '<div id="' + prepareNameOfCloseButtonContainer + '"><a href="javascript:void(0);" class="closeModalBox"><span class="closeModalBox">' + settings.localizedStrings["messageCloseWindow"] + '</span></a></div>';
 			createModalboxContainer += '</div>';
 		createModalboxContainer += '</div>';
@@ -978,14 +983,28 @@
 			var containerObj = jQuery(settings.setFaderLayer + ', ' + settings.setModalboxContainer);
 			
 			if( settings.fadeOutActive ){
-				containerObj.fadeOut( settings.fadeOutSpeed, function(){
-					jQuery(this).remove();
-				});
+				
+				if( settings.obsoleteIE678Browser ){
+					
+					// workaround for old ie browsers
+					jQuery(settings.setModalboxContainer).remove()
+					
+					jQuery(settings.setFaderLayer).fadeOut( settings.fadeOutSpeed, function(){
+						jQuery(this).remove();
+					});
+					
+				} else {
+					
+					// classic fadeOut - transparency problems in ie browsers
+					containerObj.fadeOut( settings.fadeOutSpeed, function(){
+						jQuery(this).remove();
+					});
+					
+				}
+				
 			} else {
 				containerObj.remove();
 			}
-			
-			jQuery("iframe.modalBoxIe6layerfix").remove();
 		}
 	};
 	
@@ -1056,7 +1075,7 @@
 		var settings = jQuery.extend({}, defaults, settings);
 		
 		if( settings.setNameOfPreCacheContainer ){
-			if( jQuery(settings.setNameOfPreCacheContainer).size() == 0 ){
+			if( jQuery(settings.setNameOfPreCacheContainer).length == 0 ){
 				
 				var prepareNameOfPreCacheContainer = jQuery.fn.modalBox.cleanupSelectorName({
 					replaceValue : settings.setNameOfPreCacheContainer
