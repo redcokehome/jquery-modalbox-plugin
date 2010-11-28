@@ -67,3 +67,22 @@ div#modalBox.auto {/* for image content only */
 div#modalBox div#modalBoxBody {
 	position:relative;
 }
+/* clearfix */
+.modalboxStyleContainerContent:after, 
+.modalBoxBodyContent:after {
+	content:"."; 
+	display:block; 
+	height:0; 
+	line-height:0; 
+	clear:both; 
+	visibility:hidden;
+}
+* html .modalboxStyleContainerContent, 
+* html .modalBoxBodyContent {/*IE6*/
+	zoom:1; display:block;
+}
+*+html .modalboxStyleContainerContent, 
+*+html .modalBoxBodyContent {/*IE7*/
+	zoom:1; 
+	display:block;
+}
