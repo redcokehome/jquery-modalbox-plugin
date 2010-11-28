@@ -193,18 +193,18 @@
 				openModalBox({
 					type	: 'ajax',
 					source 	: globaloptions.directCall["source"],
-					data	: ''
+					data	: null
 				});
 			} else if ( globaloptions.directCall["data"] ){
 				openModalBox({
 					type	: 'static',
-					source 	: '',
+					source 	: null,
 					data	: globaloptions.directCall["data"]
 				});
 			} else if ( globaloptions.directCall["element"] ){
 				openModalBox({
 					type	: 'static',
-					source 	: '',
+					source 	: null,
 					data	: jQuery( globaloptions.directCall["element"] ).html()
 				});
 			}
@@ -258,31 +258,46 @@
 				var isFormSubmit = false;
 				
 				if( elementObj.is("input") ){
+					
 					var source 		= elementObj.parents('form').attr('action');
 					var data		= elementObj.parents('form').serialize();
 					var type		= 'ajax';
 					isFormSubmit 	= true;
+					
 					currentEvent.preventDefault();
+					
 				} else if ( jQuery("input[name$='" + globaloptions.setNameOfHiddenAjaxInputField + "']", elementObj).length != 0 ) {
+					
 					var source 		= jQuery("input[name$='" + globaloptions.setNameOfHiddenAjaxInputField + "']", elementObj).val();
 					var data		= '';
 					var type		= 'ajax';
+					
 					currentEvent.preventDefault();
+					
 				} else if ( jQuery(globaloptions.getStaticContentFromInnerContainer, elementObj).length != 0 ) {
+					
 					if ( jQuery(globaloptions.getStaticContentFromInnerContainer + " img." + globaloptions.setNameOfGalleryImage, elementObj).length != 0 ) {
 						var currentImageObj = jQuery(globaloptions.getStaticContentFromInnerContainer + " img." + globaloptions.setNameOfGalleryImage, elementObj);
 					}
+					
 					var source 		= '';
 					var data		= jQuery(globaloptions.getStaticContentFromInnerContainer, elementObj).html();
 					var type		= 'static';
+					
 					currentEvent.preventDefault();
+					
 				} else if ( globaloptions.getStaticContentFrom ) {
+					
 					var source 		= '';
 					var data		= jQuery(globaloptions.getStaticContentFrom).html();
 					var type		= 'static';
+					
 					currentEvent.preventDefault();
+					
 				} else {
+					
 					doNotOpenModalBoxContent = true;
+					
 				}
 				
 				if( !doNotOpenModalBoxContent ){
@@ -291,7 +306,7 @@
 						element 			: elementObj,
 						source 				: source,
 						data				: data,
-						loadImagePreparer 	: {
+						loadingImagePreparer 	: {
 							currentImageObj 	: currentImageObj,
 							finalizeModalBox 	: false
 						}
@@ -388,8 +403,6 @@
 					console.log( "XMLHttpRequest.status: " + XMLHttpRequest.status );
 				}
 				
-				addCloseButtonFunctionality();
-				
 			} else if ( textStatus == "error" ) {
 				
 				if ( settings.targetContainer ){
@@ -402,8 +415,6 @@
 				if( settings.ar_enableDebugging ){
 					console.log( "textStatus: " + textStatus );
 				}
-				
-				addCloseButtonFunctionality();
 				
 			} else {
 				// no errors
@@ -478,20 +489,22 @@
 				element 			: settings.element,
 				source 				: settings.source,
 				data				: settings.data,
-				loadImagePreparer 	: {
-					currentImageObj 	: settings.loadImagePreparer["currentImageObj"],
-					finalizeModalBox 	: settings.loadImagePreparer["finalizeModalBox"]
+				loadingImagePreparer 	: {
+					currentImageObj 	: settings.loadingImagePreparer["currentImageObj"],
+					finalizeModalBox 	: settings.loadingImagePreparer["finalizeModalBox"]
 				},
 				nameOfImagePreloaderContainer 	: "imagePreparerLoader",
 				wrapContainer :	'<div class="modalBoxCarouselItemContainer"></div>'
 			}, settings || {} );
 			
 			
-			var imageObj = settings.loadImagePreparer["currentImageObj"];
+			var imageObj = settings.loadingImagePreparer["currentImageObj"];
 			
 			
 			if( imageObj ){
 				
+				
+				/*
 				jQuery(globaloptions.getStaticContentFromInnerContainer).css({ 
 					display : "block",
 					position : "absolute",
@@ -499,43 +512,37 @@
 					top : "-9999px"
 				});
 				
-				var getWidthOfCurrentImage 	= 0;
-				var getHeightOfCurrentImage = 0;
+				var imageObjQuantity = imageObj.length();
+				var initCount = 0;
 				
-				if( imageObj.length == 1 ){
+				imageObj.load(function(){
 					
-					getWidthOfCurrentImage 	= parseInt( imageObj.width() );
-					getHeightOfCurrentImage = parseInt( imageObj.height() );
+					initCount++;
 					
-				} else {
-					
-					imageObj.each(function(){
-						
-						var thisObj = jQuery(this);
-						var imageWidth = parseInt( thisObj.width() );
-						var imageHeight = parseInt( thisObj.height() );
-						
-						if( imageWidth > getWidthOfCurrentImage ){
-							getWidthOfCurrentImage 	= imageWidth;
-						}
-						
-						if( imageHeight > getHeightOfCurrentImage ){
-							getHeightOfCurrentImage = imageHeight;
-						}
-					});
-				}
+					if( initCount == imageObjQuantity ){
+						return true;
+					}
+				});
 				
 				jQuery(globaloptions.getStaticContentFromInnerContainer).removeAttr("style");
+				*/
+				
+				
+				jQuery(globaloptions.getStaticContentFromInnerContainer).css({ 
+					display : "block",
+					position : "absolute",
+					left : "-9999px",
+					top : "-9999px"
+				}).removeAttr("style");
+				
 				
 				openModalBox({
 					type				: settings.type,
 					element 			: settings.element,
 					source 				: settings.source,
 					data				: settings.data,
-					loadImagePreparer 	: {
+					loadingImagePreparer 	: {
 						currentImageObj 				: imageObj,
-						widthOfImage					: getWidthOfCurrentImage,
-						heightOfImage					: getHeightOfCurrentImage,
 						finalizeModalBox 				: true,
 						nameOfImagePreloaderContainer 	: settings.nameOfImagePreloaderContainer
 					}
@@ -543,15 +550,6 @@
 			}
 		}
 		/************ imagePreparer - END ************/
-		
-		
-		
-		/************ addCloseButtonFunctionality - END ************/
-		function addCloseButtonFunctionality(){
-			
-			
-		}
-		/************ addCloseButtonFunctionality - END ************/
 		
 		
 		
@@ -563,33 +561,25 @@
 				element 			: null,
 				source 				: null,
 				data				: null,
-				loadImagePreparer 	: {
+				loadingImagePreparer 	: {
 					currentImageObj 				: null,
-					widthOfImage					: null,
-					heightOfImage					: null,
 					finalizeModalBox 				: false,
 					nameOfImagePreloaderContainer 	: null
-				},
-				eMessageNoData		: globaloptions.localizedStrings["errorMessageIfNoDataAvailable"]
+				}
 			}, settings || {} );
 			
 			
 			jQuery(globaloptions.setNameOfPreCacheContainer).remove();
 			
 			
-			if( !settings.data && settings.eMessageNoData ){
-				settings.data = settings.eMessageNoData;
-			}
-			
-			
-			if( settings.loadImagePreparer["currentImageObj"] && !settings.loadImagePreparer["finalizeModalBox"] ){
+			if( settings.loadingImagePreparer["currentImageObj"] && !settings.loadingImagePreparer["finalizeModalBox"] ){
 				
 				imagePreparer({
-					type				: settings.type,
-					element 			: settings.element,
-					source 				: settings.source,
-					data				: settings.data,
-					loadImagePreparer 	: settings.loadImagePreparer
+					type					: settings.type,
+					element 				: settings.element,
+					source 					: settings.source,
+					data					: settings.data,
+					loadingImagePreparer 	: settings.loadingImagePreparer
 				});
 				
 			} else {
@@ -615,10 +605,8 @@
 							setModalboxClassName += 'medium';
 						} else if( jQuery(settings.element).hasClass("small") ){
 							setModalboxClassName += 'small';
-						} else if( settings.loadImagePreparer["nameOfImagePreloaderContainer"] ){
-							setModalboxClassName += 'auto';
-							//prepareCustomWidthOfModalBox += 'width:' + settings.loadImagePreparer["widthOfImage"] + 'px; ';
-							//prepareCustomWidthOfModalBox += 'height:' + settings.loadImagePreparer["heightOfImage"] + 'px; ';
+						} else if( settings.loadingImagePreparer["nameOfImagePreloaderContainer"] ){
+							setModalboxClassName += 'auto modalBoxBodyContentImageContainer';
 						}
 						
 						if( jQuery(settings.element).hasClass("emphasis") ){
@@ -804,7 +792,7 @@
 							
 						} else {
 							
-							// classic fadeOut - transparency problems in ie browsers
+							// classic fadeIn - problems with transparency in ie browsers
 							modalboxContainerObj.css({
 								position	: positionAttr,
 								left		: setPositionLeft,
@@ -846,6 +834,8 @@
 						
 						globaloptions.callFunctionAfterSuccess();
 					}
+					
+					centerModalBox();
 				}
 				/*~~~ initPositioning / END ~~~*/
 				
@@ -879,21 +869,20 @@
 			}, settings || {} );
 		
 			
-			if( globaloptions.setTypeOfFadingLayer == "white" ){
-				var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["white"];
-			} else if ( globaloptions.setTypeOfFadingLayer == "black" ){
-				var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["black"];
-			} else if ( globaloptions.setTypeOfFadingLayer == "custom" && globaloptions.setStylesOfFadingLayer["custom"] ){
-				var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["custom"];
-			} else {//globaloptions.setTypeOfFadingLayer == "disable"
-				var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["transparent"];
-			}
-			
-			
 			var currentFaderObj = jQuery(globaloptions.setFaderLayer);
 			
 			
 			if ( currentFaderObj.length == 0 ) {
+				
+				if( globaloptions.setTypeOfFadingLayer == "white" ){
+					var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["white"];
+				} else if ( globaloptions.setTypeOfFadingLayer == "black" ){
+					var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["black"];
+				} else if ( globaloptions.setTypeOfFadingLayer == "custom" && globaloptions.setStylesOfFadingLayer["custom"] ){
+					var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["custom"];
+				} else {//globaloptions.setTypeOfFadingLayer == "disable"
+					var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["transparent"];
+				}
 				
 				var prepareNameOfFadingLayer = jQuery.fn.modalBox.cleanupSelectorName({
 					replaceValue : globaloptions.setFaderLayer
@@ -901,14 +890,16 @@
 				
 				jQuery("body").append('<div id="' + prepareNameOfFadingLayer + '" style="' + setStyleOfFadingLayer + '"></div>');
 				
+				var getGeneratedFaderObj = jQuery(globaloptions.setFaderLayer);
+				
 				if( !globaloptions.killModalboxWithCloseButtonOnly ){
-					jQuery(globaloptions.setFaderLayer).click(function(){
+					getGeneratedFaderObj.click(function(){
 						jQuery.fn.modalBox.close();
 					});
 				}
 				
 				jQuery(window).resize(function(){
-					if ( jQuery(globaloptions.setFaderLayer).is(':visible') ) {
+					if ( getGeneratedFaderObj.is(':visible') ) {
 						showFadingLayer();
 					}
 				});
@@ -923,9 +914,9 @@
 					
 				} else {
 					
-					currentFaderObj.show("fast", function(){
-						settings.callFunctionAfterFading();
-					});
+					currentFaderObj.show();
+					
+					settings.callFunctionAfterFading();
 				}
 			}
 		}
