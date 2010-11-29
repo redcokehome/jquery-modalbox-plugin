@@ -162,7 +162,8 @@
 		minimalTopSpacingOfModalbox 		: 50, // sets the minimum space between modalbox and visible area in the browser window
 		usejqueryuidragable					: false, //options: true, false (the modalbox is draggable, Requires jQuery v1.2.6 or later, jQuery UI  and components: jQuery UI Widget, jQuery UI Mouse, jQuery UI Draggable)
 		
-		callFunctionAfterSuccess			: function(){},
+		callFunctionAfterSuccess			: null, // call a custom function after layer is SHOWN
+		callFunctionAfterClosedLayer		: null, // call a custom function after layer is CLOSED
 		
 		directCall							: {
 			source 	: null, // put url here like http://www.yourdomain.de/test?param=1&param=2
@@ -216,9 +217,6 @@
 		/************ initializeModalBox - BEGIN ************/
 		var doNotBindEventsOnWindowResize = false;
 		jQuery(window).resize(function(){
-			centerModalBox({
-				isResized : true
-			});
 			doNotBindEventsOnWindowResize = true;
 		});
 		
@@ -231,9 +229,6 @@
 				});
 			});
 			
-			jQuery(".closeModalBox", globaloptions.setModalboxContainer).die("click").live("click", function(){ 
-				jQuery.fn.modalBox.close(); 
-			});
 		}
 		/************ initializeModalBox - END ************/
 		
@@ -628,14 +623,11 @@
 					//~~~~ create Modalbox first - BEGIN ~~~~//
 					if( jQuery(globaloptions.setModalboxContainer).length == 0 ){
 						
-						showFadingLayer();
-						
 						var createModalboxContainer = modalboxBuilder({
 							customStyles : 'class="' + setModalboxClassName + '" style="' + prepareCustomWidthOfModalBox + '"'
 						});
 						
 						jQuery("body").append(createModalboxContainer);
-						
 						
 					} else {
 					
@@ -652,45 +644,68 @@
 					//~~~~ create Modalbox first - END ~~~~//
 					
 					
-					switch (settings.type) {
+					function getCurrentContent(){
 						
-						case 'static':{
+						switch (settings.type) {
 							
-							jQuery(globaloptions.setAjaxLoader).fadeOut("fast", function(){
-								jQuery(globaloptions.setModalboxBodyContentContainer, globaloptions.setModalboxContainer).html(settings.data);
-								centerModalBox();
-							});
-							
-							break;
-							
-						} case 'ajax':{
-						
-							jQuery.ajax({
-								type : globaloptions.ajax_type,
-								url	: settings.source,
-								data : settings.data,
-								contentType : globaloptions.ajax_contentType,
-								success	: function(data, textStatus){
+							case 'static':{
+								
+								jQuery(globaloptions.setAjaxLoader).fadeOut("fast", function(){
 									
-									jQuery(globaloptions.setAjaxLoader).fadeOut("fast", function(){
-										jQuery(globaloptions.setModalboxBodyContentContainer, globaloptions.setModalboxContainer).html(data);
-										centerModalBox();
+									jQuery(globaloptions.setModalboxBodyContentContainer, globaloptions.setModalboxContainer).html(
+										settings.data
+									);
+									
+									showFadingLayer({
+										callFunctionAfterSuccess : globaloptions.callFunctionAfterSuccess
 									});
 									
-								},
-								error : function(XMLHttpRequest, textStatus, errorThrown){
-									ajaxRedirect({ 
-										ar_XMLHttpRequest	: XMLHttpRequest,
-										ar_textStatus		: textStatus,
-										ar_errorThrown		: errorThrown,
-										targetContainer		: globaloptions.setModalboxContainer + " " + globaloptions.setModalboxBodyContentContainer
-									});
-								}
-							});
+								});
+								
+								break;
+								
+							} case 'ajax':{
 							
-							break;
+								jQuery.ajax({
+									type : globaloptions.ajax_type,
+									url	: settings.source,
+									data : settings.data,
+									contentType : globaloptions.ajax_contentType,
+									success	: function(data, textStatus){
+										
+										jQuery(globaloptions.setAjaxLoader).fadeOut("fast", function(){
+											
+											jQuery(globaloptions.setModalboxBodyContentContainer, globaloptions.setModalboxContainer).html(
+												data
+											);
+											
+											showFadingLayer({
+												callFunctionAfterSuccess : globaloptions.callFunctionAfterSuccess
+											});
+											
+										});
+										
+									},
+									error : function(XMLHttpRequest, textStatus, errorThrown){
+										ajaxRedirect({ 
+											ar_XMLHttpRequest	: XMLHttpRequest,
+											ar_textStatus		: textStatus,
+											ar_errorThrown		: errorThrown,
+											targetContainer		: globaloptions.setModalboxContainer + " " + globaloptions.setModalboxBodyContentContainer
+										});
+									}
+								});
+								
+								break;
+								
+							}
 						}
 					}
+					
+					
+					showFadingLayer({
+						callFunctionAfterSuccess : getCurrentContent()
+					});
 					
 				}
 			}
@@ -699,12 +714,101 @@
 		
 		
 		
+		/************ showFadingLayer - BEGIN ************/
+		function showFadingLayer(settings){
+			
+			
+			var settings = jQuery.extend({//defaults
+				isResized : false,
+				callFunctionAfterSuccess : null
+			}, settings || {} );
+			
+			
+			var currentFaderObj = jQuery(globaloptions.setFaderLayer);
+			
+			
+			if ( currentFaderObj.length == 0 ) {
+				
+				
+				/* append fading container first - BEGIN */
+				if( globaloptions.setTypeOfFadingLayer == "white" ){
+					var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["white"];
+				} else if ( globaloptions.setTypeOfFadingLayer == "black" ){
+					var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["black"];
+				} else if ( globaloptions.setTypeOfFadingLayer == "custom" && globaloptions.setStylesOfFadingLayer["custom"] ){
+					var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["custom"];
+				} else {//globaloptions.setTypeOfFadingLayer == "disable"
+					var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["transparent"];
+				}
+				
+				var prepareNameOfFadingLayer = jQuery.fn.modalBox.cleanupSelectorName({
+					replaceValue : globaloptions.setFaderLayer
+				});
+				
+				jQuery("body").append('<div id="' + prepareNameOfFadingLayer + '" style="' + setStyleOfFadingLayer + '"></div>');
+				/* append fading container first - END */
+				
+				
+				/* getGeneratedFaderObj - BEGIN */
+				var getGeneratedFaderObj = jQuery(globaloptions.setFaderLayer);
+				
+				if( globaloptions.fadeInActive ){
+					
+					getGeneratedFaderObj.fadeIn( globaloptions.fadeInSpeed, function(){
+						centerModalBox({
+							isResized : settings.isResized,
+							callFunctionAfterSuccess : settings.callFunctionAfterSuccess
+						});
+					});
+					
+				} else {
+					
+					getGeneratedFaderObj.show();
+					
+					centerModalBox({
+						isResized : settings.isResized,
+						callFunctionAfterSuccess : settings.callFunctionAfterSuccess
+					});
+				}
+				
+				
+				if( !globaloptions.killModalboxWithCloseButtonOnly ){
+					getGeneratedFaderObj.click(function(){
+						jQuery.fn.modalBox.close({
+							callFunctionAfterClosedLayer : globaloptions.callFunctionAfterClosedLayer
+						});
+					});
+				}
+				
+				jQuery(window).resize(function(){
+					if ( getGeneratedFaderObj.is(':visible') ) {
+						showFadingLayer({
+							isResized : true
+						});
+					}
+				});
+				/* getGeneratedFaderObj - END */
+				
+			} else {
+				
+				centerModalBox({
+					isResized : settings.isResized,
+					callFunctionAfterSuccess : settings.callFunctionAfterSuccess
+				});
+				
+			}
+		}
+		/************ showFadingLayer - END ************/
+		
+		
+		
 		/************ centerModalBox - BEGIN ************/
 		function centerModalBox(settings){
 		
 		
 			var settings = jQuery.extend({
-				isResized : false
+				isResized : false,
+				callFunctionAfterSuccess : null
 			}, settings || {} );
 			
 			
@@ -727,7 +831,6 @@
 				var getModalboxContainerHeight = modalboxContainerObj.height();
 				
 				
-				
 				/*~~~ setPositionLeft / BEGIN ~~~*/
 				var setPositionLeft = parseInt( jQuery(window).width() - getModalboxContainerWidth ) / 2;
 				if( setPositionLeft <= 0 ){
@@ -740,7 +843,6 @@
 					setPositionLeft = setPositionLeft + 'px';
 				}
 				/*~~~ setPositionLeft / END ~~~*/
-				
 				
 				
 				/*~~~ setPositionTop / BEGIN ~~~*/
@@ -775,35 +877,9 @@
 				
 				
 				/*~~~ initPositioning / BEGIN ~~~*/
-				function initPositioning(){
-					
-					
-					if( globaloptions.fadeInActive && !globaloptions.obsoleteIE678Browser ){
+				if( globaloptions.fadeInActive && !globaloptions.obsoleteIE678Browser ){
 							
-						if( modalboxContainerObj.hasClass("modalboxFadingSuccessfully") ){
-							
-							modalboxContainerObj.css({
-								position	: positionAttr,
-								left		: setPositionLeft,
-								top			: setPositionTop,
-								display		: "block",
-								visibility	: "visible"
-							});
-							
-						} else {
-							
-							// classic fadeIn - problems with transparency in ie browsers
-							modalboxContainerObj.css({
-								position	: positionAttr,
-								left		: setPositionLeft,
-								top			: setPositionTop,
-								visibility	: "visible"
-							}).fadeIn( globaloptions.fadeInSpeed, function(){
-								jQuery(this).addClass("modalboxFadingSuccessfully");
-							});
-						}
-						
-					} else {
+					if( modalboxContainerObj.hasClass("modalboxFadingSuccessfully") ){
 						
 						modalboxContainerObj.css({
 							position	: positionAttr,
@@ -813,114 +889,68 @@
 							visibility	: "visible"
 						});
 						
-					}
-					
-					
-					if( scrollToTop && !modalboxContainerObj.hasClass("modalboxScrollingSuccessfully") ){
-						modalboxContainerObj.addClass("modalboxScrollingSuccessfully");
-						simpleScrollTo();
-					}
-					
-					
-					if( !settings.isResized ){
+					} else {
 						
-						if( globaloptions.usejqueryuidragable ){
-							modalboxContainerObj.draggable("destroy").draggable({ 
-								opacity: false, 
-								iframeFix: true, 
-								refreshPositions: true 
-							});
-						}
-						
-						globaloptions.callFunctionAfterSuccess();
+						// classic fadeIn - problems with transparency in ie browsers
+						modalboxContainerObj.css({
+							position	: positionAttr,
+							left		: setPositionLeft,
+							top			: setPositionTop,
+							visibility	: "visible"
+						}).fadeIn( globaloptions.fadeInSpeed, function(){
+							
+							jQuery(this).addClass("modalboxFadingSuccessfully");
+							
+						});
 					}
 					
-					centerModalBox();
+				} else {
+					
+					modalboxContainerObj.css({
+						position	: positionAttr,
+						left		: setPositionLeft,
+						top			: setPositionTop,
+						display		: "block",
+						visibility	: "visible"
+					});
+					
+				}
+				
+				
+				if( scrollToTop && !modalboxContainerObj.hasClass("modalboxScrollingSuccessfully") ){
+					modalboxContainerObj.addClass("modalboxScrollingSuccessfully");
+					simpleScrollTo();
+				}
+				
+				
+				if( !settings.isResized ){
+					
+					if( settings.callFunctionAfterSuccess ){
+						settings.callFunctionAfterSuccess();
+					}
+					
+					if( globaloptions.usejqueryuidragable ){
+						modalboxContainerObj.draggable("destroy").draggable({ 
+							opacity: false, 
+							iframeFix: true, 
+							refreshPositions: true 
+						});
+					}
+					
+					jQuery(globaloptions.setModalboxContainer + " .closeModalBox").unbind("click").click(function(){
+						jQuery.fn.modalBox.close({
+							callFunctionAfterClosedLayer : globaloptions.callFunctionAfterClosedLayer
+						}); 
+					});
+					
 				}
 				/*~~~ initPositioning / END ~~~*/
 				
-				
-				/*~~~ init showFadingLayer / BEGIN ~~~*/
-				if( !settings.isResized ){
-					
-					showFadingLayer({
-						callFunctionAfterFading : function(){
-							initPositioning();
-						}
-					});
-					
-				} else {
-					initPositioning();
-				}
-				/*~~~ init showFadingLayer / END ~~~*/
 				
 			}
 		}
 		/************ centerModalBox - END ************/
 		
-		
-		
-		/************ showFadingLayer - BEGIN ************/
-		function showFadingLayer(settings){
-			
-			
-			var settings = jQuery.extend({//defaults
-				callFunctionAfterFading : function(){}
-			}, settings || {} );
-		
-			
-			var currentFaderObj = jQuery(globaloptions.setFaderLayer);
-			
-			
-			if ( currentFaderObj.length == 0 ) {
-				
-				if( globaloptions.setTypeOfFadingLayer == "white" ){
-					var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["white"];
-				} else if ( globaloptions.setTypeOfFadingLayer == "black" ){
-					var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["black"];
-				} else if ( globaloptions.setTypeOfFadingLayer == "custom" && globaloptions.setStylesOfFadingLayer["custom"] ){
-					var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["custom"];
-				} else {//globaloptions.setTypeOfFadingLayer == "disable"
-					var setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["transparent"];
-				}
-				
-				var prepareNameOfFadingLayer = jQuery.fn.modalBox.cleanupSelectorName({
-					replaceValue : globaloptions.setFaderLayer
-				});
-				
-				jQuery("body").append('<div id="' + prepareNameOfFadingLayer + '" style="' + setStyleOfFadingLayer + '"></div>');
-				
-				var getGeneratedFaderObj = jQuery(globaloptions.setFaderLayer);
-				
-				if( !globaloptions.killModalboxWithCloseButtonOnly ){
-					getGeneratedFaderObj.click(function(){
-						jQuery.fn.modalBox.close();
-					});
-				}
-				
-				jQuery(window).resize(function(){
-					if ( getGeneratedFaderObj.is(':visible') ) {
-						showFadingLayer();
-					}
-				});
-				
-			} else if ( currentFaderObj.length != 0 && !currentFaderObj.is(':visible') ){
-				
-				if( globaloptions.fadeInActive ){
-					
-					currentFaderObj.fadeIn( globaloptions.fadeInSpeed, function(){
-						settings.callFunctionAfterFading();
-					});
-					
-				} else {
-					
-					currentFaderObj.show();
-					
-					settings.callFunctionAfterFading();
-				}
-			}
-		}
-		/************ showFadingLayer - END ************/
 		
 	};
 	
@@ -982,8 +1012,14 @@
 	
 	jQuery.fn.modalBox.close = function(settings){
 		
+		var settings = jQuery.extend({
+			callFunctionAfterClosedLayer : null
+		}, settings || {} );
+		
+		
 		// merge the plugin defaults with custom options
-		var settings = jQuery.extend({}, defaults, settings);
+		settings = jQuery.extend({}, defaults, settings);
+		
 		
 		if( settings.setFaderLayer && settings.setModalboxContainer ){
 			
@@ -997,22 +1033,38 @@
 					jQuery(settings.setModalboxContainer).remove()
 					
 					jQuery(settings.setFaderLayer).fadeOut( settings.fadeOutSpeed, function(){
-						jQuery(this).remove();
+						removeLayer( jQuery(this) );
 					});
 					
 				} else {
 					
 					// classic fadeOut - transparency problems in ie browsers
-					containerObj.fadeOut( settings.fadeOutSpeed, function(){
-						jQuery(this).remove();
+					jQuery(settings.setModalboxContainer).fadeOut( settings.fadeOutSpeed, function(){
+						jQuery(settings.setFaderLayer).fadeOut( settings.fadeOutSpeed, function(){
+							removeLayer( containerObj );
+						});
 					});
 					
 				}
 				
 			} else {
-				containerObj.remove();
+				
+				removeLayer( containerObj );
+				
 			}
 		}
+		
+		
+		function removeLayer(container){
+			
+			container.remove();
+			
+			if( settings.callFunctionAfterClosedLayer ){
+				settings.callFunctionAfterClosedLayer();
+			}
+		}
+		
+		
 	};
 	
 	
