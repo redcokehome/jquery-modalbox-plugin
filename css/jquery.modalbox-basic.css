@@ -26,6 +26,10 @@ div#modalBox div#modalBoxBody div.modalboxStyleContainer_surface_bottom div.moda
 	margin:0;
 	padding:0;
 }
+div#modalBox.modalboxIsDraggable div#modalBoxBody div.modalboxStyleContainer_surface_top,
+div#modalBox.modalboxIsDraggable div#modalBoxBody div.modalboxStyleContainer_surface_bottom {
+	cursor:move;
+}
 div#modalBoxFaderLayer {
 	display:none; 
 	position:fixed; 
