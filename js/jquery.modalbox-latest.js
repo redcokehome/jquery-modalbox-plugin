@@ -10,7 +10,7 @@
 	var defaults = {
 		
 		minimalTopSpacingOfModalbox 		: 50, // sets the minimum space between modalbox and visible area in the browser window
-		usejqueryuidragable					: false, //options: true, false (the modalbox is draggable, Requires jQuery v1.2.6 or later, jQuery UI  and components: jQuery UI Widget, jQuery UI Mouse, jQuery UI Draggable)
+		draggable							: true, //options: true, false
 		killModalboxWithCloseButtonOnly		: false, // options: true, false (close the modal box with close button only)
 		setWidthOfModalLayer				: null,
 		customClassName 					: null,
@@ -174,7 +174,7 @@
 			if( !doNotBindEventsOnWindowResize ){
 				jQuery(this).die("click").live("click", function(event){
 					prepareModalbox({
-						event 	: event,
+						event : event,
 						element : jQuery(this)
 					});
 				});
@@ -188,35 +188,33 @@
 				
 				
 				var settings = jQuery.extend({// default settings
-					event 	: null,
-					element : null
+					event : null,
+					element : null,
+					doNotOpenModalBoxContent : false,
+					isFormSubmit : false
 				}, settings || {} );
 				
 				
 				if( settings.event && settings.element ){
 					
-					var currentEvent 	=  settings.event;
-					var elementObj		= settings.element;
-					
-					var doNotOpenModalBoxContent = false;
-					var isFormSubmit = false;
+					var elementObj = settings.element;
 					
 					if( elementObj.is("input") ){
 						
-						var source 		= elementObj.parents('form').attr('action');
-						var data		= elementObj.parents('form').serialize();
-						var type		= 'ajax';
-						isFormSubmit 	= true;
+						var source = elementObj.parents('form').attr('action');
+						var data = elementObj.parents('form').serialize();
+						var type = 'ajax';
+						settings.isFormSubmit = true;
 						
-						currentEvent.preventDefault();
+						settings.event.preventDefault();
 						
 					} else if ( jQuery("input[name$='" + globaloptions.selectorHiddenAjaxInputField + "']", elementObj).length != 0 ) {
 						
-						var source 		= jQuery("input[name$='" + globaloptions.selectorHiddenAjaxInputField + "']", elementObj).val();
-						var data		= '';
-						var type		= 'ajax';
+						var source = jQuery("input[name$='" + globaloptions.selectorHiddenAjaxInputField + "']", elementObj).val();
+						var data = '';
+						var type = 'ajax';
 						
-						currentEvent.preventDefault();
+						settings.event.preventDefault();
 						
 					} else if ( jQuery(globaloptions.selectorModalboxContentContainer, elementObj).length != 0 ) {
 						
@@ -224,46 +222,46 @@
 							var currentImageObj = jQuery(globaloptions.selectorModalboxContentContainer + " img" + globaloptions.selectorImageGallery, elementObj);
 						}
 						
-						var source 		= '';
-						var data		= jQuery(globaloptions.selectorModalboxContentContainer, elementObj).html();
-						var type		= 'static';
+						var source = '';
+						var data = jQuery(globaloptions.selectorModalboxContentContainer, elementObj).html();
+						var type = 'static';
 						
-						currentEvent.preventDefault();
+						settings.event.preventDefault();
 						
 					} else if ( globaloptions.getStaticContentFrom ) {
 						
-						var source 		= '';
-						var data		= jQuery(globaloptions.getStaticContentFrom).html();
-						var type		= 'static';
+						var source = '';
+						var data = jQuery(globaloptions.getStaticContentFrom).html();
+						var type = 'static';
 						
-						currentEvent.preventDefault();
+						settings.event.preventDefault();
 						
 					} else {
 						
-						doNotOpenModalBoxContent = true;
+						settings.doNotOpenModalBoxContent = true;
 						
 					}
 					
-					if( !doNotOpenModalBoxContent ){
+					if( !settings.doNotOpenModalBoxContent ){
 						openModalBox({
-							type				: type,
-							element 			: elementObj,
-							source 				: source,
-							data				: data,
-							loadingImagePreparer 	: {
-								currentImageObj 	: currentImageObj,
-								finalizeModalBox 	: false
+							type : type,
+							element : elementObj,
+							source : source,
+							data : data,
+							loadingImagePreparer : {
+								currentImageObj : currentImageObj,
+								finalizeModalBox : false
 							}
 						});
 					}
 					
-					if( isFormSubmit ){
+					if( settings.isFormSubmit ){
 						return false;
 					}
 				}
 			}
 			/************ prepareModalbox - END ************/
-						
+			
 			
 			
 			/************ ajaxRedirect - BEGIN ************/
@@ -280,9 +278,9 @@
 				
 				
 				// ~~~~~~~~~ global settings - BEGIN ~~~~~~~~~ //
-				var XMLHttpRequest 	= settings.ar_XMLHttpRequest;
-				var textStatus 		= settings.ar_textStatus;
-				var errorThrown 	= settings.ar_errorThrown;
+				var XMLHttpRequest = settings.ar_XMLHttpRequest;
+				var textStatus = settings.ar_textStatus;
+				var errorThrown = settings.ar_errorThrown;
 				// ~~~~~~~~~ global settings - END ~~~~~~~~~ //
 				
 				
@@ -334,14 +332,22 @@
 					
 					if( settings.errorMessage && settings.targetContainer ){
 						
-						var errorMessageContainer	= '';
-						errorMessageContainer += '<div class="simleModalboxErrorBox"><div class="simleModalboxErrorBoxContent">';
-						errorMessageContainer += settings.errorMessage;
-						errorMessageContainer += '</div></div>';
+						var errorMessageContainer = '<div class="simleModalboxErrorBox"><div class="simleModalboxErrorBoxContent">' + 
+							settings.errorMessage + 
+						'</div></div>';
 						
-						jQuery(settings.targetContainer).removeAttr("style").html( errorMessageContainer );
+						jQuery(
+							settings.targetContainer
+						).removeAttr(
+							"style"
+						).html( 
+							errorMessageContainer 
+						);
+						
 						if( jQuery(settings.targetContainer).parents(globaloptions.selectorModalboxContainer).length > 0 ){
+							
 							jQuery(globaloptions.selectorAjaxLoader).remove();
+							
 							centerModalBox();
 						}
 						
@@ -351,36 +357,6 @@
 				
 			}
 			/************ ajaxRedirect - END ************/
-			
-			
-			
-			/************ addAjaxUrlParameter - BEGIN ************/
-			function addAjaxUrlParameter(settings){
-
-
-				var settings = jQuery.extend({// default settings
-					currentURL 			: '',
-					addParameterName 	: 'ajaxContent',
-					addParameterValue 	: 'true'
-				}, settings || {} );
-				
-				var currentURL = settings.currentURL;
-					
-				if( currentURL.indexOf(settings.addParameterName) != -1){
-					currentURL = currentURL;
-				} else {
-					if( currentURL.indexOf("?") != -1){
-						var currentSeparator = "&";
-					} else {
-						var currentSeparator = "?";
-					}
-					currentURL = currentURL + currentSeparator + settings.addParameterName + '=' + settings.addParameterValue;
-				}
-				
-				return currentURL;
-				
-			}
-			/************ addAjaxUrlParameter - END ************/
 			
 			
 			
@@ -469,7 +445,9 @@
 						currentImageObj 				: null,
 						finalizeModalBox 				: false,
 						nameOfImagePreloaderContainer 	: null
-					}
+					},
+					prepareCustomWidthOfModalBox : "",
+					setModalboxClassName : ""
 				}, settings || {} );
 				
 				
@@ -482,12 +460,20 @@
 				}
 				
 				if( !globaloptions.killModalboxWithCloseButtonOnly ){
-					jQuery(globaloptions.selectorFadingLayer).die("click").live("click", function(){
+					jQuery(
+						globaloptions.selectorFadingLayer
+					).die(
+						"click"
+					).live("click", function(){
 						initClose();
 					});
 				}
 				
-				jQuery(globaloptions.selectorModalboxContainer + " .closeModalBox").die("click").live("click", function(){
+				jQuery(
+					globaloptions.selectorModalboxContainer + " .closeModalBox"
+				).die(
+					"click"
+				).live("click", function(){
 					initClose();
 				});
 				/* init close events - END */
@@ -512,40 +498,42 @@
 						
 						
 						if( settings.source ){
-							settings.source = addAjaxUrlParameter({
+							settings.source = methods.addAjaxUrlParameter({
 								currentURL : settings.source
 							});
 						}
 						
 						
-						var prepareCustomWidthOfModalBox = "";
-						var setModalboxClassName = "";
-						
 						if( settings.element ){
 							
 							if( jQuery(settings.element).hasClass("large") ){
-								setModalboxClassName += 'large';
+								settings.setModalboxClassName += 'large';
 							} else if( jQuery(settings.element).hasClass("medium") ){
-								setModalboxClassName += 'medium';
+								settings.setModalboxClassName += 'medium';
 							} else if( jQuery(settings.element).hasClass("small") ){
-								setModalboxClassName += 'small';
+								settings.setModalboxClassName += 'small';
 							} else if( settings.loadingImagePreparer["nameOfImagePreloaderContainer"] ){
-								setModalboxClassName += 'auto modalBoxBodyContentImageContainer';
+								settings.setModalboxClassName += 'auto modalBoxBodyContentImageContainer';
 							}
 							
 							if( jQuery(settings.element).hasClass("emphasis") ){
-								setModalboxClassName += ' emphasis';
+								settings.setModalboxClassName += ' emphasis';
 							}
 						}
 						
 						
 						if( globaloptions.customClassName ){
-							setModalboxClassName += ' ' + globaloptions.customClassName;
+							settings.setModalboxClassName += ' ' + globaloptions.customClassName;
+						}
+						
+						
+						if( globaloptions.draggable ){
+							settings.setModalboxClassName += ' modalboxIsDraggable';
 						}
 						
 						
 						if( globaloptions.setWidthOfModalLayer ){
-							prepareCustomWidthOfModalBox += 'width:' + parseInt( globaloptions.setWidthOfModalLayer ) + 'px; ';
+							settings.prepareCustomWidthOfModalBox += 'width:' + parseInt( globaloptions.setWidthOfModalLayer ) + 'px; ';
 						}
 						
 						
@@ -554,21 +542,14 @@
 							
 							jQuery("body").append(
 								methods.modalboxBuilder({
-									customStyles : 'class="' + setModalboxClassName + '" style="' + prepareCustomWidthOfModalBox + '"'
+									customStyles : 'class="' + settings.setModalboxClassName + '" style="' + settings.prepareCustomWidthOfModalBox + '"'
 								})
 							);
 							
 						} else {
 						
-							var prepareNameOfAjaxLoader = methods.cleanupSelectorName({
-								replaceValue : globaloptions.selectorAjaxLoader
-							});
+							methods.clean();
 							
-							methods.clean({
-								setModalboxContentContainer	: globaloptions.selectorModalboxBodyContentContainer,
-								selectorAjaxLoader : prepareNameOfAjaxLoader,
-								localizedStrings : globaloptions.localizedStrings["messageAjaxLoader"]
-							});
 						}
 						/*  create Modalbox first - END */
 						
@@ -579,9 +560,13 @@
 								
 								case 'static': {
 									
-									jQuery(globaloptions.selectorAjaxLoader).hide();
+									jQuery(
+										globaloptions.selectorAjaxLoader
+									).hide();
 									
-									jQuery(globaloptions.selectorModalboxBodyContentContainer, globaloptions.selectorModalboxContainer).html(
+									jQuery(
+										globaloptions.selectorModalboxBodyContentContainer, globaloptions.selectorModalboxContainer
+									).html(
 										settings.data
 									);
 									
@@ -600,9 +585,13 @@
 										contentType : globaloptions.ajax_contentType,
 										success	: function(data, textStatus){
 											
-											jQuery(globaloptions.selectorAjaxLoader).fadeOut("fast", function(){
+											jQuery(
+												globaloptions.selectorAjaxLoader
+											).fadeOut("fast", function(){
 												
-												jQuery(globaloptions.selectorModalboxBodyContentContainer, globaloptions.selectorModalboxContainer).html(
+												jQuery(
+													globaloptions.selectorModalboxBodyContentContainer, globaloptions.selectorModalboxContainer
+												).html(
 													data
 												);
 												
@@ -615,10 +604,10 @@
 										},
 										error : function(XMLHttpRequest, textStatus, errorThrown){
 											ajaxRedirect({ 
-												ar_XMLHttpRequest	: XMLHttpRequest,
-												ar_textStatus		: textStatus,
-												ar_errorThrown		: errorThrown,
-												targetContainer		: globaloptions.selectorModalboxContainer + " " + globaloptions.selectorModalboxBodyContentContainer
+												ar_XMLHttpRequest : XMLHttpRequest,
+												ar_textStatus : textStatus,
+												ar_errorThrown : errorThrown,
+												targetContainer	: globaloptions.selectorModalboxContainer + " " + globaloptions.selectorModalboxBodyContentContainer
 											});
 										}
 									});
@@ -627,11 +616,18 @@
 									
 								}
 							}
+							
+							if( globaloptions.draggable ){
+								methods.dragBox();
+							}
+							
 						}
+						
 						
 						showFadingLayer({
 							callFunctionAfterShow : getCurrentContent
 						});
+						
 						
 					}
 				}
@@ -811,19 +807,9 @@
 						}
 						
 						if( !settings.isResized ){
-							
 							if( settings.callFunctionAfterShow ){
 								settings.callFunctionAfterShow();
 							}
-							
-							if( globaloptions.usejqueryuidragable ){
-								modalboxContainerObj.draggable("destroy").draggable({ 
-									opacity: false, 
-									iframeFix: true, 
-									refreshPositions: true 
-								});
-							}
-							
 						}
 					}
 					/*~~~ initLastSteps / END ~~~*/
@@ -983,14 +969,20 @@
 		/********** clean - BEGIN **********/
 		clean : function(settings){
 			
-			var settings = jQuery.extend({
-				setModalboxContentContainer	: null,
-				selectorAjaxLoader : null,
-				localizedStrings : null
-			}, settings || {} );
+			// merge the plugin defaults with custom settings
+			var settings = jQuery.extend( {}, defaults, settings);
 			
-			if( settings.setModalboxContentContainer ){
-				jQuery(settings.setModalboxContentContainer).html('<div id="' + settings.selectorAjaxLoader + '">' + settings.localizedStrings + '</div>');
+			if( settings.selectorModalboxBodyContentContainer ){
+				
+				var prepareNameOfAjaxLoader = methods.cleanupSelectorName({
+					replaceValue: settings.selectorAjaxLoader
+				});
+				
+				jQuery(
+					settings.selectorModalboxBodyContentContainer
+				).html(
+					'<div id="' + prepareNameOfAjaxLoader + '">' + settings.localizedStrings["messageAjaxLoader"] + '</div>'
+				);
 			}
 			
 		},
@@ -1038,6 +1030,7 @@
 		
 		
 		
+		
 		/********** cleanupSelectorName - BEGIN **********/
 		cleanupSelectorName : function(settings){
 			
@@ -1053,6 +1046,132 @@
 			
 		},
 		/********** cleanupSelectorName - END **********/
+		
+		
+		
+		
+		/********** dragBox - BEGIN **********/
+		dragBox : function(settings){
+			
+			//inspired by http://aktuell.de.selfhtml.org/artikel/javascript/draganddrop/
+			
+			var settings = jQuery.extend({
+				dragObject : null,
+				dragObjectPosX : 0,
+				dragObjectPosY : 0,
+				documentPosX : 0,
+				documentPosY : 0
+			}, settings || {} );
+			
+			// merge the plugin defaults with custom settings
+			settings = jQuery.extend({}, defaults, settings);
+			
+			
+			function moveObject(obj) {
+				
+				settings.dragObject = obj; // overwrite settings.dragObject
+				
+				settings.dragObjectPosX = (
+					settings.documentPosX - settings.dragObject.offsetLeft
+				);
+				
+				settings.dragObjectPosY = (
+					settings.documentPosY - settings.dragObject.offsetTop
+				);
+			}
+
+			
+			jQuery(
+				document
+			).mousemove(function(event){
+				
+				settings.documentPosX = event.pageX;
+				settings.documentPosY = event.pageY;
+				
+				if (settings.dragObject) {
+					jQuery(settings.dragObject).css({
+						left : (settings.documentPosX - settings.dragObjectPosX) + "px",
+						top : (settings.documentPosY - settings.dragObjectPosY) + "px"
+					});
+				}
+			});
+			
+			
+			jQuery(
+				settings.selectorModalboxContainer + " .modalboxStyleContainer_surface_top, " + 
+				settings.selectorModalboxContainer + " .modalboxStyleContainer_surface_bottom"
+			).unbind(
+				'mousedown' // unbind events before init
+			).bind('mousedown', function(event){
+				
+				if (event.type == 'mousedown') {
+					
+					jQuery(
+						settings.selectorModalboxContainer
+					).unbind(
+						'mousemove mouseup' // unbind events before init
+					).bind('mousemove mouseup', function(event){
+						
+						var thisObj = jQuery(this);
+						
+						if( thisObj.is(":visible") ){
+							
+							if (event.type == 'mousemove') {
+								
+								moveObject(
+									this
+								);
+								
+							} else if (event.type == 'mouseup') {
+								
+								settings.dragObject = null;
+								
+								thisObj.unbind(
+									'mousemove'
+								);
+							}
+						}
+						
+					});
+					
+				}
+				
+			});
+			
+		},
+		/********** dragBox - END **********/
+		
+		
+		
+		
+		/************ addAjaxUrlParameter - BEGIN ************/
+		addAjaxUrlParameter : function(settings){
+
+
+			var settings = jQuery.extend({// default settings
+				currentURL 			: '',
+				addParameterName 	: 'ajaxContent',
+				addParameterValue 	: 'true'
+			}, settings || {} );
+			
+			var currentURL = settings.currentURL;
+				
+			if( currentURL.indexOf(settings.addParameterName) != -1){
+				currentURL = currentURL;
+			} else {
+				if( currentURL.indexOf("?") != -1){
+					var currentSeparator = "&";
+				} else {
+					var currentSeparator = "?";
+				}
+				currentURL = currentURL + currentSeparator + settings.addParameterName + '=' + settings.addParameterValue;
+			}
+			
+			return currentURL;
+			
+		},
+		/************ addAjaxUrlParameter - END ************/
+		
 		
 		
 		
