@@ -9,34 +9,34 @@
 	// Default options
 	var defaults = {
 		
-		minimalTopSpacingOfModalbox 		: 50, // sets the minimum space between modalbox and visible area in the browser window
-		draggable							: true, //options: true, false
-		killModalboxWithCloseButtonOnly		: false, // options: true, false (close the modal box with close button only)
-		setWidthOfModalLayer				: null,
-		customClassName 					: null,
-		getStaticContentFrom				: null,
+		minimalTopSpacingOfModalbox : 50, // sets the minimum space between modalbox and visible area in the browser window
+		draggable : true, //options: true, false
+		killModalboxWithCloseButtonOnly : false, // options: true, false (close the modal box with close button only)
+		setWidthOfModalLayer : null,
+		customClassName : null,
+		getStaticContentFrom : null,
 		
 		// set the positions of the modalbox manualy
-		positionLeft 						: null,
-		positionTop 						: null,
+		positionLeft : null,
+		positionTop : null,
 		
 		// effects
-		effectType_show_fadingLayer			: ['fade', 'fast'], // options: ['show'] or ['fade', 'fast']
-		effectType_hide_fadingLayer 		: ['fade', 'fast'], // options: ['hide'] or ['fade', 'fast']
-		effectType_show_modalBox 			: ['show'], // options: ['show'] or ['fade', 'fast']
-		effectType_hide_modalBox 			: ['hide'], // options: ['hide'] or ['fade', 'fast']
+		effectType_show_fadingLayer : ['fade', 'fast'], // options: ['show'] or ['fade', 'fast']
+		effectType_hide_fadingLayer : ['fade', 'fast'], // options: ['hide'] or ['fade', 'fast']
+		effectType_show_modalBox : ['show'], // options: ['show'] or ['fade', 'fast']
+		effectType_hide_modalBox : ['hide'], // options: ['hide'] or ['fade', 'fast']
 		
 		// selectors
-		selectorModalboxContainer			: '#modalBox',
-		selectorModalboxBodyContainer		: '#modalBoxBody',
-		selectorModalboxBodyContentContainer: '.modalBoxBodyContent',
-		selectorFadingLayer					: '#modalBoxFaderLayer',
-		selectorAjaxLoader					: '#modalBoxAjaxLoader',
-		selectorModalboxCloseContainer 		: '#modalBoxCloseButton',
-		selectorModalboxContentContainer	: '.modalboxContent',
-		selectorHiddenAjaxInputField		: 'ajaxhref',
-		selectorPreCacheContainer			: '#modalboxPreCacheContainer',
-		selectorImageGallery				: '.modalgallery',
+		selectorModalboxContainer : '#modalBox',
+		selectorModalboxBodyContainer : '#modalBoxBody',
+		selectorModalboxBodyContentContainer : '.modalBoxBodyContent',
+		selectorFadingLayer : '#modalBoxFaderLayer',
+		selectorAjaxLoader : '#modalBoxAjaxLoader',
+		selectorModalboxCloseContainer : '#modalBoxCloseButton',
+		selectorModalboxContentContainer : '.modalboxContent',
+		selectorHiddenAjaxInputField : 'ajaxhref',
+		selectorPreCacheContainer : '#modalboxPreCacheContainer',
+		selectorImageGallery : '.modalgallery',
 		
 		/*
 			Layout Container:
@@ -62,20 +62,21 @@
 			<div class="modalboxStyleContainer_surface_top"><div class="modalboxStyleContainer_surface_body"><!-- - --></div></div>
 			<div class="modalboxStyleContainer_surface_bottom"><div class="modalboxStyleContainer_surface_body"><!-- - --></div></div>
 		*/
-		setModalboxLayoutContainer_Begin	: '<div class="modalboxStyleContainer_surface_left"><div class="modalboxStyleContainer_surface_right"><div class="modalboxStyleContainerContent"><div class="modalBoxBodyContent">',
-		setModalboxLayoutContainer_End		: '</div></div></div></div><div class="modalboxStyleContainer_corner_topLeft"><!-- - --></div><div class="modalboxStyleContainer_corner_topRight"><!-- - --></div><div class="modalboxStyleContainer_corner_bottomLeft"><!-- - --></div><div class="modalboxStyleContainer_corner_bottomRight"><!-- - --></div><div class="modalboxStyleContainer_surface_top"><div class="modalboxStyleContainer_surface_body"><!-- - --></div></div><div class="modalboxStyleContainer_surface_bottom"><div class="modalboxStyleContainer_surface_body"><!-- - --></div></div>',
+		setModalboxLayoutContainer_Begin : '<div class="modalboxStyleContainer_surface_left"><div class="modalboxStyleContainer_surface_right"><div class="modalboxStyleContainerContent"><div class="modalBoxBodyContent">',
+		setModalboxLayoutContainer_End : '</div></div></div></div><div class="modalboxStyleContainer_corner_topLeft"><!-- - --></div><div class="modalboxStyleContainer_corner_topRight"><!-- - --></div><div class="modalboxStyleContainer_corner_bottomLeft"><!-- - --></div><div class="modalboxStyleContainer_corner_bottomRight"><!-- - --></div><div class="modalboxStyleContainer_surface_top"><div class="modalboxStyleContainer_surface_body"><!-- - --></div></div><div class="modalboxStyleContainer_surface_bottom"><div class="modalboxStyleContainer_surface_body"><!-- - --></div></div>',
 		
 		// localization
-		localizedStrings					: {
-			messageCloseWindow					: 'Close Window',
-			messageAjaxLoader					: 'Please wait',
-			errorMessageIfNoDataAvailable		: '<strong>No content available!</strong>',
-			errorMessageXMLHttpRequest			: 'Error: XML-Http-Request Status "500"',
-			errorMessageTextStatusError			: 'Error: AJAX Request failed'
+		localizedStrings : {
+			messageCloseWindow : 'Close Window',
+			messageAjaxLoader : 'Please wait',
+			errorMessageIfNoDataAvailable : '<strong>No content available!</strong>',
+			errorMessageXMLHttpRequest : 'Error: XML-Http-Request Status "500"',
+			errorMessageTextStatusError : 'Error: AJAX Request failed',
+			errorMessageImageLoadingFailed : 'Error: Image loading failed'
 		},
 		
-		setTypeOfFadingLayer				: 'black', // options: white, black, custom, disable
-		setStylesOfFadingLayer				: {// define the opacity and color of fader layer here
+		setTypeOfFadingLayer : 'black', // options: white, black, custom, disable
+		setStylesOfFadingLayer : {// define the opacity and color of fader layer here
 			white			: 'background-color:#fff; filter:alpha(opacity=60); -moz-opacity:0.6; opacity:0.6;',
 			black			: 'background-color:#000; filter:alpha(opacity=40); -moz-opacity:0.4; opacity:0.4;',
 			transparent 	: 'background-color:transparent;',
@@ -83,23 +84,27 @@
 		},
 		
 		// direct call
-		directCall							: {
+		directCall : {
 			source 	: null, // put url here like http://www.yourdomain.de/test?param=1&param=2
 			data	: null, // put content here like data : '<div class="testclass">test</div>'
-			element	: null // define identifyer of source container here to get html content, can be id or class like  like '#sourcecontainer'
+			element	: null, // define identifyer of source container here to get html content, can be id or class like  like '#sourcecontainer'
+			image	: null // add image url here. e.G.: http://www.yourdomain.de/myimage.jpg
 		},
 		
 		// ajax settings
-		ajax_type							: 'POST', // The type of request to make ("POST" or "GET"), default is "POST". Note: Other HTTP request methods, such as PUT and DELETE, can also be used here, but they are not supported by all browsers.
-		ajax_contentType					: 'application/x-www-form-urlencoded; charset=utf-8', // examples : charset=utf-8, charset=ISO-8859-1
+		ajax_type : 'POST', // The type of request to make ("POST" or "GET"), default is "POST". Note: Other HTTP request methods, such as PUT and DELETE, can also be used here, but they are not supported by all browsers.
+		ajax_contentType : 'application/x-www-form-urlencoded; charset=utf-8', // examples : charset=utf-8, charset=ISO-8859-1
 		
 		// callback functionalities
 		callFunctionBeforeShow : function(){ // call a custom function before layer will be shown. return value must be "true" to finalize modal layer
 			return true;
 		},
-		callFunctionAfterShow 				: function(){}, // call a custom function after layer is shown
-		callFunctionBeforeHide 				: function(){}, // call a custom function before layer will be closed
-		callFunctionAfterHide 				: function(){} // call a custom function after layer is closed
+		callFunctionAfterShow : function(){}, // call a custom function after layer is shown
+		callFunctionBeforeHide : function(){}, // call a custom function before layer will be closed
+		callFunctionAfterHide : function(){}, // call a custom function after layer is closed
+		
+		debug : false,
+		debugOuputMessagePrefix : '[jQuery modalBox plugin] '
 		
 	};
 	
@@ -145,20 +150,22 @@
 				if( globaloptions.directCall["source"] ){
 					openModalBox({
 						type	: 'ajax',
-						source 	: globaloptions.directCall["source"],
-						data	: null
+						source 	: globaloptions.directCall["source"]
 					});
 				} else if ( globaloptions.directCall["data"] ){
 					openModalBox({
 						type	: 'static',
-						source 	: null,
 						data	: globaloptions.directCall["data"]
 					});
 				} else if ( globaloptions.directCall["element"] ){
 					openModalBox({
 						type	: 'static',
-						source 	: null,
 						data	: jQuery( globaloptions.directCall["element"] ).html()
+					});
+				} else if ( globaloptions.directCall["image"] ){
+					openModalBox({
+						type	: 'image',
+						image	: '<img class="modalBoxImagePreload" src="' + globaloptions.directCall["image"] + '" />'
 					});
 				}
 			}
@@ -408,12 +415,16 @@
 					*/
 					
 					
-					jQuery(globaloptions.selectorModalboxContentContainer).css({ 
+					jQuery(
+						globaloptions.selectorModalboxContentContainer
+					).css({ 
 						display : "block",
 						position : "absolute",
 						left : "-9999px",
 						top : "-9999px"
-					}).removeAttr("style");
+					}).removeAttr(
+						"style"
+					);
 					
 					
 					openModalBox({
@@ -441,10 +452,11 @@
 					element 			: null,
 					source 				: null,
 					data				: null,
-					loadingImagePreparer 	: {
-						currentImageObj 				: null,
-						finalizeModalBox 				: false,
-						nameOfImagePreloaderContainer 	: null
+					image				: null,
+					loadingImagePreparer : {
+						currentImageObj : null,
+						finalizeModalBox : false,
+						nameOfImagePreloaderContainer : null
 					},
 					prepareCustomWidthOfModalBox : "",
 					setModalboxClassName : ""
@@ -479,7 +491,9 @@
 				/* init close events - END */
 				
 				
-				jQuery(globaloptions.selectorPreCacheContainer).remove();
+				jQuery(
+					globaloptions.selectorPreCacheContainer
+				).remove();
 				
 				
 				if( settings.loadingImagePreparer["currentImageObj"] && !settings.loadingImagePreparer["finalizeModalBox"] ){
@@ -493,6 +507,7 @@
 					});
 					
 				} else {
+					
 				
 					if( settings.type && globaloptions.callFunctionBeforeShow() ){
 						
@@ -522,6 +537,11 @@
 						}
 						
 						
+						if( settings.image ){
+							settings.setModalboxClassName += 'modalBoxSingleImage modalBoxBodyContentImageContainer';
+						}
+						
+						
 						if( globaloptions.customClassName ){
 							settings.setModalboxClassName += ' ' + globaloptions.customClassName;
 						}
@@ -540,7 +560,9 @@
 						/*  create Modalbox first - BEGIN */
 						if( jQuery(globaloptions.selectorModalboxContainer).length == 0 ){
 							
-							jQuery("body").append(
+							jQuery(
+								"body"
+							).append(
 								methods.modalboxBuilder({
 									customStyles : 'class="' + settings.setModalboxClassName + '" style="' + settings.prepareCustomWidthOfModalBox + '"'
 								})
@@ -554,6 +576,11 @@
 						/*  create Modalbox first - END */
 						
 						
+						var modalboxBodyContentContainerbj = jQuery(
+							globaloptions.selectorModalboxContainer + ' ' + globaloptions.selectorModalboxBodyContentContainer
+						);
+						
+						
 						var getCurrentContent = function(){
 							
 							switch (settings.type) {
@@ -564,9 +591,7 @@
 										globaloptions.selectorAjaxLoader
 									).hide();
 									
-									jQuery(
-										globaloptions.selectorModalboxBodyContentContainer, globaloptions.selectorModalboxContainer
-									).html(
+									modalboxBodyContentContainerbj.html(
 										settings.data
 									);
 									
@@ -589,9 +614,7 @@
 												globaloptions.selectorAjaxLoader
 											).fadeOut("fast", function(){
 												
-												jQuery(
-													globaloptions.selectorModalboxBodyContentContainer, globaloptions.selectorModalboxContainer
-												).html(
+												modalboxBodyContentContainerbj.html(
 													data
 												);
 												
@@ -610,6 +633,52 @@
 												targetContainer	: globaloptions.selectorModalboxContainer + " " + globaloptions.selectorModalboxBodyContentContainer
 											});
 										}
+									});
+									
+									break;
+									
+								} case 'image': {
+								
+									jQuery(
+										settings.image
+									).load(function(response, status, xhr){
+										
+										if( status == "error" ) {
+											
+											methods.debugOutput({ 
+												msg : 'Error / ' + xhr.status + ' : ' + xhr.statusText
+											});
+											
+										} else {
+											
+											jQuery(
+												globaloptions.selectorAjaxLoader
+											).fadeOut("fast", function(){
+												
+												modalboxBodyContentContainerbj.html(
+													settings.image
+												).find(
+													'img.modalBoxImagePreload'
+												).removeClass(
+													"modalBoxImagePreload"
+												).addClass(
+													"modalBoxImageLoadingSuccessful"
+												);
+												
+												centerModalBox({
+													callFunctionAfterShow : globaloptions.callFunctionAfterShow
+												});
+												
+											});
+											
+										}
+										
+									}).error(function(){
+										
+										methods.debugOutput({ 
+											msg : 'Error / ' + globaloptions.localizedStrings["errorMessageImageLoadingFailed"] 
+										});
+										
 									});
 									
 									break;
@@ -663,7 +732,11 @@
 						replaceValue : globaloptions.selectorFadingLayer
 					});
 					
-					jQuery("body").append('<div id="' + prepareNameOfFadingLayer + '" style="' + setStyleOfFadingLayer + '"></div>');
+					jQuery(
+						"body"
+					).append(
+						'<div id="' + prepareNameOfFadingLayer + '" style="' + setStyleOfFadingLayer + '"></div>'
+					);
 					/* append fading container first - END */
 					
 					
@@ -733,14 +806,20 @@
 				}, settings || {} );
 				
 				
-				var modalboxContainerObj = jQuery(globaloptions.selectorModalboxContainer);
+				var modalboxContainerObj = jQuery(
+					globaloptions.selectorModalboxContainer
+				);
 				
 				
 				if( jQuery(globaloptions.selectorPreCacheContainer).length == 0 && modalboxContainerObj.length != 0 ){
 					
 					
 					if( jQuery("body a.modalBoxTopLink").length == 0 ){
-						jQuery("body").prepend('<a class="modalBoxTopLink"></a>');
+						jQuery(
+							"body"
+						).prepend(
+							'<a class="modalBoxTopLink"></a>'
+						);
 					}
 					
 					
@@ -754,6 +833,7 @@
 					
 					/*~~~ setPositionLeft / BEGIN ~~~*/
 					var setPositionLeft = parseInt( jQuery(window).width() - getModalboxContainerWidth ) / 2;
+					
 					if( setPositionLeft <= 0 ){
 						setPositionLeft = 0;
 					}
@@ -879,6 +959,7 @@
 			
 		},
 		/********** init - END **********/
+		
 		
 		
 		
@@ -1255,8 +1336,70 @@
 			
 			return createModalboxContainer;
 			
-		}
+		},
 		/********** modalboxBuilder - END **********/
+		
+		
+		
+		/************ debugOutput - BEGIN ************/
+		debugOutput : function(settings){
+		
+			/*
+				Example:
+				-----------------------
+				<script type="text/javascript">
+					try {
+						if( blafasel ){ 
+							alert("tester"); 
+						}
+					} catch (error) {
+						methods.debugOutput({ 
+							msg : error 
+						});
+					}
+				</script>
+			*/
+			
+			var settings = jQuery.extend({//default settings
+				msg : null
+			}, settings || {} );
+			
+			
+			// merge the plugin defaults with custom options
+			settings = jQuery.extend({}, defaults, settings);
+			
+			
+			if( settings.debug && settings.msg && ( ("console" in window) && ("firebug" in console) ) ){
+				
+				if( typeof(settings.msg) == "object" ){
+					
+					console.info( 
+						settings.msg
+					);
+					
+				} else {
+					
+					if( settings.msg.trim() != '' ){
+						
+						console.debug( 
+							settings.debugOuputMessagePrefix + settings.msg
+						);
+						
+					} else {
+						
+						console.debug( 
+							settings.msg
+						);
+					}
+					
+				}
+				
+			}
+		}
+		/************ debugOutput - END ************/
+		
+		
+		
 	};
 	
 	
