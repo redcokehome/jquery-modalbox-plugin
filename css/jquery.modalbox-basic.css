@@ -41,8 +41,7 @@ div#modalBoxFaderLayer {
 }
 div#modalBoxAjaxLoader {
 	background:transparent url(../img/ajax-loader.gif) 50% 40% no-repeat; 
-	height:100px; 
-	padding:130px 0 0 0; 
+	padding:120px 100px 80px 100px; 
 	text-align:center; 
 	overflow:hidden;
 }
@@ -97,7 +96,8 @@ div#modalBox.modalBoxSingleImage div#modalBoxBody div.modalboxStyleContainerCont
 }
 * html .modalboxStyleContainerContent, 
 * html .modalBoxBodyContent {/*IE6*/
-	zoom:1; display:block;
+	zoom:1; 
+	display:block;
 }
 *+html .modalboxStyleContainerContent, 
 *+html .modalBoxBodyContent {/*IE7*/
