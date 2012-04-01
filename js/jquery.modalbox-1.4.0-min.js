@@ -1,5 +1,5 @@
 /*
-* jQuery modalBox plugin <trunk> <http://code.google.com/p/jquery-modalbox-plugin/> 
+* jQuery modalBox plugin v1.4.0 <http://code.google.com/p/jquery-modalbox-plugin/>
 * @requires jQuery v1.3.2 or later 
 * is released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
 */
