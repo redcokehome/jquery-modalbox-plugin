@@ -32,11 +32,13 @@
 		selectorModalboxBodyContentContainer : '.modalBoxBodyContent',
 		selectorFadingLayer : '#modalBoxFaderLayer',
 		selectorAjaxLoader : '#modalBoxAjaxLoader',
+		selectorCloseModalBox : '.closeModalBox',
 		selectorModalboxCloseContainer : '#modalBoxCloseButton',
 		selectorModalboxContentContainer : '.modalboxContent',
 		selectorHiddenAjaxInputField : 'ajaxhref',
 		selectorPreCacheContainer : '#modalboxPreCacheContainer',
-		selectorImageGallery : '.modalgallery',
+		selectorImageLink : '.modalBoxImageLink',
+		selectorImageNoLink : '.modalBoxImageNoLink',
 		
 		/*
 			Layout Container:
@@ -166,8 +168,9 @@
 					});
 				} else if ( globaloptions.directCall["image"] ){
 					openModalBox({
-						type	: 'image',
-						image	: globaloptions.directCall["image"]
+						type		: 'image',
+						image		: globaloptions.directCall["image"],
+						imageLink 	: globaloptions.directCall["imageLink"]
 					});
 				}
 			}
@@ -216,6 +219,7 @@
 					var data = '';
 					var type = '';
 					var image = '';
+					var imageLink = '';
 					
 					var getAttrHref = (
 						typeof( elementObj.attr("href") ) != "undefined" ? elementObj.attr("href") : ''
@@ -268,12 +272,28 @@
 						type = 'image';
 						image = getAttrHref;
 						
+						checkImageLink = methods.extractImageLink({ 
+							src : getAttrHref 
+						});
+						
+						imageLink = (
+							checkImageLink != "" ? checkImageLink : ""
+						);
+						
 						settings.event.preventDefault();
 						
 					} else if ( methods.isImageSource({ src : getAttrRel }) ){
 						
 						type = 'image';
 						image = getAttrRel;
+						
+						checkImageLink = methods.extractImageLink({ 
+							src : getAttrRel 
+						});
+						
+						imageLink = (
+							checkImageLink != "" ? checkImageLink : ""
+						);
 						
 						settings.event.preventDefault();
 						
@@ -315,7 +335,8 @@
 							element : elementObj,
 							source : source,
 							data : data,
-							image : image
+							image : image,
+							imageLink : imageLink
 						});
 					}
 					
@@ -437,47 +458,79 @@
 			function openModalBox(settings){
 			
 				var settings = jQuery.extend({
-					type				: null,
-					element 			: null,
-					source 				: null,
-					data				: null,
-					image				: null,
+					type : null,
+					element : null,
+					source : null,
+					data : null,
+					image : null,
+					imageLink : null,
 					prepareCustomWidthOfModalBox : "",
 					setModalboxClassName : ""
 				}, settings || {} );
 				
 				
-				/* init close events - BEGIN */
-				function initClose(){
-					methods.close({
-						callFunctionBeforeHide : globaloptions.callFunctionBeforeHide,
-						callFunctionAfterHide : globaloptions.callFunctionAfterHide
-					});
-				}
-				
-				if( !globaloptions.killModalboxWithCloseButtonOnly ){
-					jQuery(
-						globaloptions.selectorFadingLayer
-					).die(
-						"click"
-					).live("click", function(){
-						initClose();
-					});
-				}
-				
-				jQuery(
-					globaloptions.selectorModalboxContainer + " .closeModalBox"
-				).die(
-					"click"
-				).live("click", function(){
-					initClose();
+				var prepareNameOfImageLink = methods.cleanupSelectorName({
+					replaceValue : globaloptions.selectorImageLink
 				});
+				
+				var prepareNameOfImageNoLink = methods.cleanupSelectorName({
+					replaceValue : globaloptions.selectorImageNoLink
+				});
+				
+				
+				
+				/* init close events - BEGIN */
+				function initCloseEvents(){
+					
+					
+					function callMethodClose(){
+						methods.close({
+							callFunctionBeforeHide : globaloptions.callFunctionBeforeHide,
+							callFunctionAfterHide : globaloptions.callFunctionAfterHide
+						});
+					}
+					
+					
+					if( !globaloptions.killModalboxWithCloseButtonOnly ){
+						jQuery(
+							globaloptions.selectorFadingLayer
+						).unbind(
+							"click"
+						).bind("click", function(){
+							callMethodClose();
+						});
+					}
+					
+					
+					jQuery(
+						globaloptions.selectorModalboxContainer + " " + globaloptions.selectorCloseModalBox + ", " + 
+						globaloptions.selectorModalboxContainer + " " + globaloptions.selectorImageNoLink
+					).unbind(
+						"click"
+					).bind("click", function(){
+						callMethodClose();
+					});
+				}
 				/* init close events - END */
+				
+				
+				
+				function centerModalbox(){
+					methods.center({
+						positionLeft : globaloptions.positionLeft,
+						positionTop : globaloptions.positionTop,
+						minimalTopSpacingOfModalbox : globaloptions.minimalTopSpacingOfModalbox,
+						effectType_show_modalBox : globaloptions.effectType_show_modalBox,
+						callFunctionAfterShow : globaloptions.callFunctionAfterShow
+					});
+				}
+				
 				
 				
 				jQuery(
 					globaloptions.selectorPreCacheContainer
 				).remove();
+				
 				
 				
 				if( settings.type && globaloptions.callFunctionBeforeShow() ){
@@ -564,15 +617,9 @@
 									settings.data
 								);
 								
-								methods.center({
-									
-									positionLeft : globaloptions.positionLeft,
-									positionTop : globaloptions.positionTop,
-									minimalTopSpacingOfModalbox : globaloptions.minimalTopSpacingOfModalbox,
-									effectType_show_modalBox : globaloptions.effectType_show_modalBox,
-									
-									callFunctionAfterShow : globaloptions.callFunctionAfterShow
-								});
+								centerModalbox();
+								
+								initCloseEvents();
 								
 								break;
 								
@@ -593,15 +640,9 @@
 												data
 											);
 											
-											methods.center({
-												
-												positionLeft : globaloptions.positionLeft,
-												positionTop : globaloptions.positionTop,
-												minimalTopSpacingOfModalbox : globaloptions.minimalTopSpacingOfModalbox,
-												effectType_show_modalBox : globaloptions.effectType_show_modalBox,
-												
-												callFunctionAfterShow : globaloptions.callFunctionAfterShow
-											});
+											centerModalbox();
+											
+											initCloseEvents();
 											
 										});
 										
@@ -634,34 +675,61 @@
 										
 										var imageObj = jQuery(this);
 										
+										if( settings.imageLink ){
+											
+											imageObj.attr({
+												alt : settings.imageLink
+											}).wrap(
+												'<a class="' + prepareNameOfImageLink + '" href="' + settings.imageLink + '" title="' + settings.imageLink + '"></a>'
+											);
+											
+											jQuery(
+												globaloptions.selectorModalboxContainer + " a" + globaloptions.selectorImageLink
+											).die(
+												"click"
+											).live("click", function(event){
+												
+												//event.preventDefault();
+												
+												methods.clean();
+												
+												centerModalbox();
+												
+											});
+											
+										} else {
+											imageObj.attr({
+												alt : globaloptions.localizedStrings["messageCloseWindow"],
+												title : globaloptions.localizedStrings["messageCloseWindow"]
+											});
+										}
+										
 										jQuery(
 											globaloptions.selectorAjaxLoader
 										).fadeOut("fast", function(){
+											
 											
 											modalboxBodyContentContainerbj.html(
 												imageObj
 											);
 											
-											methods.center({
-												
-												positionLeft : globaloptions.positionLeft,
-												positionTop : globaloptions.positionTop,
-												minimalTopSpacingOfModalbox : globaloptions.minimalTopSpacingOfModalbox,
-												effectType_show_modalBox : globaloptions.effectType_show_modalBox,
-												
-												callFunctionAfterShow : function(){
-												
-													globaloptions.callFunctionAfterShow();
-													
-													modalboxBodyContentContainerbj.find(
-														'img.modalBoxImagePreload'
-													).removeClass(
-														"modalBoxImagePreload"
-													).addClass(
-														"modalBoxImageLoadingSuccessful"
-													);
-												}
-											});
+											
+											modalboxBodyContentContainerbj.find(
+												'img.modalBoxImagePreload'
+											).removeClass(
+												"modalBoxImagePreload"
+											).addClass(
+												settings.imageLink ? 
+												"modalBoxImageLoadingSuccessful" : 
+												"modalBoxImageLoadingSuccessful " + prepareNameOfImageNoLink
+											);
+											
+											
+											centerModalbox();
+											
+											
+											initCloseEvents();
+											
 											
 										});
 										
@@ -1209,6 +1277,50 @@
 		
 		
 		
+		/********** extractImageLink - BEGIN **********/
+		extractImageLink : function(settings){
+			
+			
+			/*
+				Example:
+				-----------------------------
+				var extractImageLink = methods.extractImageLink({
+					src : 'http://www.yourdomain.com/demopicture_kalexis_newzealand_6930.JPG?link[http://www.steffenhollstein.de]'
+				});
+			*/
+			
+			
+			var settings = jQuery.extend({
+				src : null,
+				splitValuePrefix : "link[",
+				splitValueSuffix : "]",
+				returnValue : ""
+			}, settings || {} );
+			
+			
+			var currentSource = settings.src.toLowerCase();
+			
+			if( currentSource.indexOf(settings.splitValuePrefix) != -1 && currentSource.indexOf(settings.splitValueSuffix) != -1 ){
+				
+				currentSource = currentSource.split(
+					settings.splitValuePrefix
+				);
+				
+				currentSource = currentSource[1].split(
+					settings.splitValueSuffix
+				);
+				
+				settings.returnValue = currentSource[0];
+			}
+			
+			return settings.returnValue;
+			
+		},
+		/********** extractImageLink - END **********/
+		
+		
+		
+		
 		/********** cleanupSelectorName - BEGIN **********/
 		cleanupSelectorName : function(settings){
 			
@@ -1416,6 +1528,10 @@
 				replaceValue : settings.selectorAjaxLoader
 			});
 			
+			var prepareNameOfCloseModalBox = methods.cleanupSelectorName({
+				replaceValue : settings.selectorCloseModalBox
+			});
+			
 			
 			var createModalboxContainer = '';
 			createModalboxContainer += '<div id="' + prepareNameOfModalboxContainer + '"' + settings.customStyles + '>';
@@ -1427,7 +1543,7 @@
 						createModalboxContainer += '</div>';
 						
 					createModalboxContainer += settings.setModalboxLayoutContainer_End;
-					createModalboxContainer += '<div id="' + prepareNameOfCloseButtonContainer + '"><a href="javascript:void(0);" class="closeModalBox"><span class="closeModalBox">' + settings.localizedStrings["messageCloseWindow"] + '</span></a></div>';
+					createModalboxContainer += '<div id="' + prepareNameOfCloseButtonContainer + '"><a href="javascript:void(0);" class="' + prepareNameOfCloseModalBox + '"><span class="' + prepareNameOfCloseModalBox + '">' + settings.localizedStrings["messageCloseWindow"] + '</span></a></div>';
 				createModalboxContainer += '</div>';
 			createModalboxContainer += '</div>';
 			

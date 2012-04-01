@@ -76,11 +76,17 @@ div#modalBox.modalBoxSingleImage {
 	width:auto;
 	max-width:80%;
 }
+div#modalBox.modalBoxSingleImage div#modalBoxBody div.modalboxStyleContainerContent a.modalBoxImageLink {
+	display:block;
+}
 div#modalBox.modalBoxSingleImage div#modalBoxBody div.modalboxStyleContainerContent img.modalBoxImagePreload {
 	visibility:hidden;
 }
 div#modalBox.modalBoxSingleImage div#modalBoxBody div.modalboxStyleContainerContent img.modalBoxImageLoadingSuccessful {
 	width:100%;
+}
+div#modalBox.modalBoxSingleImage div#modalBoxBody div.modalboxStyleContainerContent img.modalBoxImageNoLink {
+	cursor:pointer;
 }
 
 
