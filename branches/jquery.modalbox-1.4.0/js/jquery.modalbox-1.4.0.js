@@ -480,16 +480,28 @@
 				
 				
 				/* init close events - BEGIN */
+				function callMethodClose(){
+					methods.close({
+						callFunctionBeforeHide : globaloptions.callFunctionBeforeHide,
+						callFunctionAfterHide : globaloptions.callFunctionAfterHide
+					});
+				}
+				
+				
 				function initCloseEvents(){
 					
-					
-					function callMethodClose(){
-						methods.close({
-							callFunctionBeforeHide : globaloptions.callFunctionBeforeHide,
-							callFunctionAfterHide : globaloptions.callFunctionAfterHide
-						});
-					}
-					
+					jQuery(
+						globaloptions.selectorModalboxContainer + " " + globaloptions.selectorCloseModalBox + ", " + 
+						globaloptions.selectorModalboxContainer + " " + globaloptions.selectorImageNoLink
+					).unbind(
+						"click"
+					).bind("click", function(){
+						callMethodClose();
+					});
+				}
+				
+				
+				function initCloseEventsOfFadingLayer(){
 					
 					if( !globaloptions.killModalboxWithCloseButtonOnly ){
 						jQuery(
@@ -500,16 +512,6 @@
 							callMethodClose();
 						});
 					}
-					
-					
-					jQuery(
-						globaloptions.selectorModalboxContainer + " " + globaloptions.selectorCloseModalBox + ", " + 
-						globaloptions.selectorModalboxContainer + " " + globaloptions.selectorImageNoLink
-					).unbind(
-						"click"
-					).bind("click", function(){
-						callMethodClose();
-					});
 				}
 				/* init close events - END */
 				
@@ -689,11 +691,17 @@
 												"click"
 											).live("click", function(event){
 												
-												//event.preventDefault();
+												event.preventDefault();
 												
 												methods.clean();
 												
 												centerModalbox();
+												
+												setTimeout(function(){
+													
+													location.href = settings.imageLink;
+													
+												}, 400 );
 												
 											});
 											
@@ -748,9 +756,14 @@
 							}
 						}
 						
+						
 						if( globaloptions.draggable ){
 							methods.dragBox();
 						}
+						
+						
+						initCloseEventsOfFadingLayer();
+						
 						
 					}
 					
