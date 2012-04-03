@@ -9,9 +9,10 @@
 	// Default options
 	var defaults = {
 		
-		minimalTopSpacingOfModalbox : 50, // sets the minimum space between modalbox and visible area in the browser window
+		minimalTopSpacing : 50, // sets the minimum space between modalbox and visible area in the browser window
 		draggable : true, //options: true, false
-		killModalboxWithCloseButtonOnly : false, // options: true, false (close the modal box with close button only)
+		disablingClickToClose : false, // options: true, false (disabling close events, hide the close button)
+		disablingTheOverlayClickToClose : false, // options: true, false (close the modal box with close button only)
 		setWidthOfModalLayer : null,
 		customClassName : null,
 		getStaticContentFrom : null,
@@ -27,18 +28,18 @@
 		effectType_hide_modalBox : ['hide'], // options: ['hide'] or ['fade', 'fast']
 		
 		// selectors
-		selectorModalboxContainer : '#modalBox',
-		selectorModalboxBodyContainer : '#modalBoxBody',
-		selectorModalboxBodyContentContainer : '.modalBoxBodyContent',
-		selectorFadingLayer : '#modalBoxFaderLayer',
-		selectorAjaxLoader : '#modalBoxAjaxLoader',
+		selectorModalbox : '#modalBox',
+		selectorModalBoxBody : '#modalBoxBody',
+		selectorModalBoxBodyContent : '.modalBoxBodyContent',
+		selectorModalBoxFaderLayer : '#modalBoxFaderLayer',
+		selectorModalBoxAjaxLoader : '#modalBoxAjaxLoader',
+		selectorModalBoxCloseButton : '#modalBoxCloseButton',
+		selectorModalboxContent : '.modalboxContent',
+		selectorModalboxPreCacheContainer : '#modalboxPreCacheContainer',
+		selectorModalBoxImageLink : '.modalBoxImageLink',
+		selectorModalBoxImageNoLink : '.modalBoxImageNoLink',
 		selectorCloseModalBox : '.closeModalBox',
-		selectorModalboxCloseContainer : '#modalBoxCloseButton',
-		selectorModalboxContentContainer : '.modalboxContent',
-		selectorHiddenAjaxInputField : 'ajaxhref',
-		selectorPreCacheContainer : '#modalboxPreCacheContainer',
-		selectorImageLink : '.modalBoxImageLink',
-		selectorImageNoLink : '.modalBoxImageNoLink',
+		selectorAjaxhref : 'ajaxhref',
 		
 		/*
 			Layout Container:
@@ -79,10 +80,10 @@
 		
 		setTypeOfFadingLayer : 'black', // options: white, black, custom, disable
 		setStylesOfFadingLayer : {// define the opacity and color of fader layer here
-			white			: 'background-color:#fff; filter:alpha(opacity=60); -moz-opacity:0.6; opacity:0.6;',
-			black			: 'background-color:#000; filter:alpha(opacity=40); -moz-opacity:0.4; opacity:0.4;',
-			transparent 	: 'background-color:transparent;',
-			custom			: null
+			white : 'background-color:#fff; filter:alpha(opacity=60); -moz-opacity:0.6; opacity:0.6;',
+			black : 'background-color:#000; filter:alpha(opacity=40); -moz-opacity:0.4; opacity:0.4;',
+			transparent : 'background-color:transparent;',
+			custom : null
 		},
 		
 		// direct call
@@ -246,10 +247,10 @@
 						
 						settings.event.preventDefault();
 						
-					} else if ( elementObj.find("input[name$='" + globaloptions.selectorHiddenAjaxInputField + "']").length != 0 ){
+					} else if ( elementObj.find("input[name$='" + globaloptions.selectorAjaxhref + "']").length != 0 ){
 						
 						source = elementObj.find(
-							"input[name$='" + globaloptions.selectorHiddenAjaxInputField + "']"
+							"input[name$='" + globaloptions.selectorAjaxhref + "']"
 						).val();
 						
 						data = '';
@@ -297,12 +298,12 @@
 						
 						settings.event.preventDefault();
 						
-					} else if ( elementObj.find(globaloptions.selectorModalboxContentContainer).length != 0 ){
+					} else if ( elementObj.find(globaloptions.selectorModalboxContent).length != 0 ){
 						
 						source = '';
 						
 						data = elementObj.find(
-							globaloptions.selectorModalboxContentContainer
+							globaloptions.selectorModalboxContent
 						).html();
 						
 						type = 'static';
@@ -431,16 +432,16 @@
 							errorMessageContainer 
 						);
 						
-						if( jQuery(settings.targetContainer).parents(globaloptions.selectorModalboxContainer).length > 0 ){
+						if( jQuery(settings.targetContainer).parents(globaloptions.selectorModalbox).length > 0 ){
 							
 							jQuery(
-								globaloptions.selectorAjaxLoader
+								globaloptions.selectorModalBoxAjaxLoader
 							).remove();
 							
 							methods.center({
 								positionLeft : globaloptions.positionLeft,
 								positionTop : globaloptions.positionTop,
-								minimalTopSpacingOfModalbox : globaloptions.minimalTopSpacingOfModalbox,
+								minimalTopSpacing : globaloptions.minimalTopSpacing,
 								effectType_show_modalBox : globaloptions.effectType_show_modalBox
 							});
 						}
@@ -470,11 +471,11 @@
 				
 				
 				var prepareNameOfImageLink = methods.cleanupSelectorName({
-					replaceValue : globaloptions.selectorImageLink
+					replaceValue : globaloptions.selectorModalBoxImageLink
 				});
 				
 				var prepareNameOfImageNoLink = methods.cleanupSelectorName({
-					replaceValue : globaloptions.selectorImageNoLink
+					replaceValue : globaloptions.selectorModalBoxImageNoLink
 				});
 				
 				
@@ -491,8 +492,15 @@
 				function initCloseEvents(){
 					
 					jQuery(
-						globaloptions.selectorModalboxContainer + " " + globaloptions.selectorCloseModalBox + ", " + 
-						globaloptions.selectorModalboxContainer + " " + globaloptions.selectorImageNoLink
+						
+						!globaloptions.disablingClickToClose ? (
+							globaloptions.selectorModalbox + " " + globaloptions.selectorModalBoxBodyContent + " " + globaloptions.selectorCloseModalBox + ", " + 
+							globaloptions.selectorModalbox + " " + globaloptions.selectorModalBoxCloseButton + " " + globaloptions.selectorCloseModalBox + ", " + 
+							globaloptions.selectorModalbox + " " + globaloptions.selectorModalBoxImageNoLink
+						) : (
+							globaloptions.selectorModalbox + " " + globaloptions.selectorModalBoxBodyContent + " " + globaloptions.selectorCloseModalBox
+						)
+						
 					).unbind(
 						"click"
 					).bind("click", function(){
@@ -503,9 +511,9 @@
 				
 				function initCloseEventsOfFadingLayer(){
 					
-					if( !globaloptions.killModalboxWithCloseButtonOnly ){
+					if( !globaloptions.disablingClickToClose && !globaloptions.disablingTheOverlayClickToClose ){
 						jQuery(
-							globaloptions.selectorFadingLayer
+							globaloptions.selectorModalBoxFaderLayer
 						).unbind(
 							"click"
 						).bind("click", function(){
@@ -521,7 +529,7 @@
 					methods.center({
 						positionLeft : globaloptions.positionLeft,
 						positionTop : globaloptions.positionTop,
-						minimalTopSpacingOfModalbox : globaloptions.minimalTopSpacingOfModalbox,
+						minimalTopSpacing : globaloptions.minimalTopSpacing,
 						effectType_show_modalBox : globaloptions.effectType_show_modalBox,
 						callFunctionAfterShow : globaloptions.callFunctionAfterShow
 					});
@@ -530,7 +538,7 @@
 				
 				
 				jQuery(
-					globaloptions.selectorPreCacheContainer
+					globaloptions.selectorModalboxPreCacheContainer
 				).remove();
 				
 				
@@ -576,13 +584,18 @@
 					}
 					
 					
+					if( globaloptions.disablingClickToClose ){
+						settings.setModalboxClassName += ' disablingClickToClose';
+					}
+					
+					
 					if( globaloptions.setWidthOfModalLayer ){
 						settings.prepareCustomWidthOfModalBox += 'width:' + parseInt( globaloptions.setWidthOfModalLayer ) + 'px; ';
 					}
 					
 					
 					/*  create Modalbox first - BEGIN */
-					if( jQuery(globaloptions.selectorModalboxContainer).length == 0 ){
+					if( jQuery(globaloptions.selectorModalbox).length == 0 ){
 						
 						jQuery(
 							"body"
@@ -601,7 +614,7 @@
 					
 					
 					var modalboxBodyContentContainerbj = jQuery(
-						globaloptions.selectorModalboxContainer + ' ' + globaloptions.selectorModalboxBodyContentContainer
+						globaloptions.selectorModalbox + ' ' + globaloptions.selectorModalBoxBodyContent
 					);
 					
 					
@@ -612,7 +625,7 @@
 							case 'static': {
 								
 								jQuery(
-									globaloptions.selectorAjaxLoader
+									globaloptions.selectorModalBoxAjaxLoader
 								).hide();
 								
 								modalboxBodyContentContainerbj.html(
@@ -635,7 +648,7 @@
 									success	: function(data, textStatus){
 										
 										jQuery(
-											globaloptions.selectorAjaxLoader
+											globaloptions.selectorModalBoxAjaxLoader
 										).fadeOut("fast", function(){
 											
 											modalboxBodyContentContainerbj.html(
@@ -654,7 +667,7 @@
 											ar_XMLHttpRequest : XMLHttpRequest,
 											ar_textStatus : textStatus,
 											ar_errorThrown : errorThrown,
-											targetContainer	: globaloptions.selectorModalboxContainer + " " + globaloptions.selectorModalboxBodyContentContainer
+											targetContainer	: globaloptions.selectorModalbox + " " + globaloptions.selectorModalBoxBodyContent
 										});
 									}
 								});
@@ -686,7 +699,7 @@
 											);
 											
 											jQuery(
-												globaloptions.selectorModalboxContainer + " a" + globaloptions.selectorImageLink
+												globaloptions.selectorModalbox + " a" + globaloptions.selectorModalBoxImageLink
 											).die(
 												"click"
 											).live("click", function(event){
@@ -713,7 +726,7 @@
 										}
 										
 										jQuery(
-											globaloptions.selectorAjaxLoader
+											globaloptions.selectorModalBoxAjaxLoader
 										).fadeOut("fast", function(){
 											
 											
@@ -790,7 +803,7 @@
 				}, settings || {} );
 				
 				
-				if ( jQuery(globaloptions.selectorFadingLayer).length == 0 ) {
+				if ( jQuery(globaloptions.selectorModalBoxFaderLayer).length == 0 ) {
 					
 					/* append fading container first - BEGIN */
 					if( globaloptions.setTypeOfFadingLayer == "white" ){
@@ -804,7 +817,7 @@
 					}
 					
 					var prepareNameOfFadingLayer = methods.cleanupSelectorName({
-						replaceValue : globaloptions.selectorFadingLayer
+						replaceValue : globaloptions.selectorModalBoxFaderLayer
 					});
 					
 					jQuery(
@@ -817,7 +830,7 @@
 					
 					/* getGeneratedFaderObj - BEGIN */
 					var getGeneratedFaderObj = jQuery(
-						globaloptions.selectorFadingLayer
+						globaloptions.selectorModalBoxFaderLayer
 					);
 					
 					if( globaloptions.setTypeOfFadingLayer == "disable" ){
@@ -833,7 +846,7 @@
 									
 									positionLeft : globaloptions.positionLeft,
 									positionTop : globaloptions.positionTop,
-									minimalTopSpacingOfModalbox : globaloptions.minimalTopSpacingOfModalbox,
+									minimalTopSpacing : globaloptions.minimalTopSpacing,
 									effectType_show_modalBox : globaloptions.effectType_show_modalBox,
 									
 									isResized : settings.isResized,
@@ -851,7 +864,7 @@
 								
 								positionLeft : globaloptions.positionLeft,
 								positionTop : globaloptions.positionTop,
-								minimalTopSpacingOfModalbox : globaloptions.minimalTopSpacingOfModalbox,
+								minimalTopSpacing : globaloptions.minimalTopSpacing,
 								effectType_show_modalBox : globaloptions.effectType_show_modalBox,
 								
 								isResized : settings.isResized,
@@ -869,7 +882,7 @@
 								
 								positionLeft : globaloptions.positionLeft,
 								positionTop : globaloptions.positionTop,
-								minimalTopSpacingOfModalbox : globaloptions.minimalTopSpacingOfModalbox,
+								minimalTopSpacing : globaloptions.minimalTopSpacing,
 								effectType_show_modalBox : globaloptions.effectType_show_modalBox,
 								
 								isResized : true
@@ -884,7 +897,7 @@
 						
 						positionLeft : globaloptions.positionLeft,
 						positionTop : globaloptions.positionTop,
-						minimalTopSpacingOfModalbox : globaloptions.minimalTopSpacingOfModalbox,
+						minimalTopSpacing : globaloptions.minimalTopSpacing,
 						effectType_show_modalBox : globaloptions.effectType_show_modalBox,
 						
 						isResized : settings.isResized,
@@ -922,11 +935,11 @@
 			var settings = jQuery.extend({}, defaults, settings);
 			
 			
-			if( settings.selectorFadingLayer && settings.selectorModalboxContainer ){
+			if( settings.selectorModalBoxFaderLayer && settings.selectorModalbox ){
 			
 				settings.callFunctionBeforeHide();
 				
-				var containerObj = jQuery(settings.selectorFadingLayer + ', ' + settings.selectorModalboxContainer);
+				var containerObj = jQuery(settings.selectorModalBoxFaderLayer + ', ' + settings.selectorModalbox);
 				
 				if( settings.setTypeOfFadingLayer == "disable" ){
 					settings.effectType_hide_fadingLayer[0] = ""; // reset to default
@@ -938,8 +951,8 @@
 						switch ( settings.effectType_hide_modalBox[0] ){
 							case 'fade' : {
 								
-								jQuery(settings.selectorModalboxContainer).fadeOut( settings.effectType_hide_modalBox[1], function(){
-									jQuery(settings.selectorFadingLayer).fadeOut( settings.effectType_hide_fadingLayer[1], function(){
+								jQuery(settings.selectorModalbox).fadeOut( settings.effectType_hide_modalBox[1], function(){
+									jQuery(settings.selectorModalBoxFaderLayer).fadeOut( settings.effectType_hide_fadingLayer[1], function(){
 										removeLayer( containerObj );
 									});
 								});
@@ -948,9 +961,9 @@
 								
 							} default : {
 								
-								jQuery(settings.selectorModalboxContainer).hide();
+								jQuery(settings.selectorModalbox).hide();
 								
-								jQuery(settings.selectorFadingLayer).fadeOut( settings.effectType_hide_fadingLayer[1], function(){
+								jQuery(settings.selectorModalBoxFaderLayer).fadeOut( settings.effectType_hide_fadingLayer[1], function(){
 									removeLayer( containerObj );
 								});
 								
@@ -965,7 +978,7 @@
 						switch ( settings.effectType_hide_modalBox[0] ){
 							case 'fade' : {
 								
-								jQuery(settings.selectorModalboxContainer).fadeOut( settings.effectType_hide_modalBox[1], function(){
+								jQuery(settings.selectorModalbox).fadeOut( settings.effectType_hide_modalBox[1], function(){
 									removeLayer( containerObj );
 								});
 								
@@ -1022,11 +1035,11 @@
 			
 			
 			var modalboxContainerObj = jQuery(
-				settings.selectorModalboxContainer
+				settings.selectorModalbox
 			);
 			
 			
-			if( jQuery(settings.selectorPreCacheContainer).length == 0 && modalboxContainerObj.length > 0 ){
+			if( jQuery(settings.selectorModalboxPreCacheContainer).length == 0 && modalboxContainerObj.length > 0 ){
 				
 				
 				var scrollToTop = false;
@@ -1083,7 +1096,7 @@
 					
 					if( setPositionTop <= 0 ){
 					
-						setPositionTop = settings.minimalTopSpacingOfModalbox + 'px';
+						setPositionTop = settings.minimalTopSpacing + 'px';
 						scrollToTop = true;
 						
 					} else {
@@ -1198,14 +1211,14 @@
 			// merge the plugin defaults with custom settings
 			var settings = jQuery.extend( {}, defaults, settings);
 			
-			if( settings.selectorModalboxBodyContentContainer ){
+			if( settings.selectorModalBoxBodyContent ){
 				
 				var prepareNameOfAjaxLoader = methods.cleanupSelectorName({
-					replaceValue: settings.selectorAjaxLoader
+					replaceValue: settings.selectorModalBoxAjaxLoader
 				});
 				
 				jQuery(
-					settings.selectorModalboxBodyContentContainer
+					settings.selectorModalBoxBodyContent
 				).html(
 					'<div id="' + prepareNameOfAjaxLoader + '">' + settings.localizedStrings["messageAjaxLoader"] + '</div>'
 				);
@@ -1401,8 +1414,8 @@
 			
 			
 			jQuery(
-				settings.selectorModalboxContainer + " .modalboxStyleContainer_surface_top, " + 
-				settings.selectorModalboxContainer + " .modalboxStyleContainer_surface_bottom"
+				settings.selectorModalbox + " .modalboxStyleContainer_surface_top, " + 
+				settings.selectorModalbox + " .modalboxStyleContainer_surface_bottom"
 			).unbind(
 				'mousedown' // unbind events before init
 			).bind('mousedown', function(event){
@@ -1410,7 +1423,7 @@
 				if (event.type == 'mousedown') {
 					
 					jQuery(
-						settings.selectorModalboxContainer
+						settings.selectorModalbox
 					).unbind(
 						'mousemove mouseup' // unbind events before init
 					).bind('mousemove mouseup', function(event){
@@ -1484,11 +1497,11 @@
 			// merge the plugin defaults with custom settings
 			var settings = jQuery.extend({}, defaults, settings);
 			
-			if( settings.selectorPreCacheContainer ){
-				if( jQuery(settings.selectorPreCacheContainer).length == 0 ){
+			if( settings.selectorModalboxPreCacheContainer ){
+				if( jQuery(settings.selectorModalboxPreCacheContainer).length == 0 ){
 					
 					var prepareNameOfPreCacheContainer = methods.cleanupSelectorName({
-						replaceValue : settings.selectorPreCacheContainer
+						replaceValue : settings.selectorModalboxPreCacheContainer
 					});
 					
 					var createModalboxContainer = methods.modalboxBuilder();
@@ -1500,7 +1513,7 @@
 					
 					jQuery("body").append(preCacheContainer);
 					
-					jQuery(settings.selectorModalboxContainer).show();
+					jQuery(settings.selectorModalbox).show();
 				}
 			}
 			
@@ -1522,23 +1535,23 @@
 			
 			
 			var prepareNameOfModalboxContainer = methods.cleanupSelectorName({
-				replaceValue : settings.selectorModalboxContainer
+				replaceValue : settings.selectorModalbox
 			});
 			
 			var prepareNameOfModalboxBodyContainer = methods.cleanupSelectorName({
-				replaceValue : settings.selectorModalboxBodyContainer
+				replaceValue : settings.selectorModalBoxBody
 			});
 			
 			var prepareNameOfModalboxContentContainer = methods.cleanupSelectorName({
-				replaceValue : settings.selectorModalboxBodyContentContainer
+				replaceValue : settings.selectorModalBoxBodyContent
 			});
 			
 			var prepareNameOfCloseButtonContainer = methods.cleanupSelectorName({
-				replaceValue : settings.selectorModalboxCloseContainer
+				replaceValue : settings.selectorModalBoxCloseButton
 			});
 			
 			var prepareNameOfAjaxLoader = methods.cleanupSelectorName({
-				replaceValue : settings.selectorAjaxLoader
+				replaceValue : settings.selectorModalBoxAjaxLoader
 			});
 			
 			var prepareNameOfCloseModalBox = methods.cleanupSelectorName({
