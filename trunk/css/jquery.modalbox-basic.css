@@ -72,6 +72,11 @@ div#modalBox div#modalBoxBody {
 }
 
 
+div#modalBox.disablingClickToClose div#modalBoxBody div#modalBoxCloseButton {
+	display:none;
+}
+
+
 div#modalBox.modalBoxSingleImage {
 	width:auto;
 	max-width:80%;
