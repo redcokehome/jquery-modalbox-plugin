@@ -479,6 +479,8 @@
 					initCloseEvents();
 					
 					initCloseEventsOfFadingLayer();
+					
+					centerModalbox();
 				
 				}
 				
