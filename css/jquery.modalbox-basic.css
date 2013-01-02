@@ -87,8 +87,9 @@ div#modalBox.modalBoxSingleImage div#modalBoxBody div.modalboxStyleContainerCont
 div#modalBox.modalBoxSingleImage div#modalBoxBody div.modalboxStyleContainerContent img.modalBoxImagePreload {
 	visibility:hidden;
 }
+div#modalBox.modalBoxSingleImage div#modalBoxBody div.modalboxStyleContainerContent img.modalBoxImagePreload,
 div#modalBox.modalBoxSingleImage div#modalBoxBody div.modalboxStyleContainerContent img.modalBoxImageLoadingSuccessful {
-	width:100%;
+	max-width:100%;
 }
 div#modalBox.modalBoxSingleImage div#modalBoxBody div.modalboxStyleContainerContent img.modalBoxImageNoLink {
 	cursor:pointer;

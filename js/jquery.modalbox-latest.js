@@ -151,23 +151,31 @@
 			
 			
 			/************ direct call without event binding - BEGIN ************/
-			if( globaloptions.directCall ){
-				if( globaloptions.directCall["source"] ){
+			if( globaloptions.directCall )
+			{
+				if( globaloptions.directCall["source"] )
+				{
 					openModalBox({
 						type	: 'ajax',
 						source 	: globaloptions.directCall["source"]
 					});
-				} else if ( globaloptions.directCall["data"] ){
+				} 
+				else if ( globaloptions.directCall["data"] )
+				{
 					openModalBox({
 						type	: 'static',
 						data	: globaloptions.directCall["data"]
 					});
-				} else if ( globaloptions.directCall["element"] ){
+				} 
+				else if ( globaloptions.directCall["element"] )
+				{
 					openModalBox({
 						type	: 'static',
 						data	: jQuery( globaloptions.directCall["element"] ).html()
 					});
-				} else if ( globaloptions.directCall["image"] ){
+				} 
+				else if ( globaloptions.directCall["image"] )
+				{
 					openModalBox({
 						type		: 'image',
 						image		: globaloptions.directCall["image"],
@@ -181,11 +189,15 @@
 			
 			/************ initializeModalBox - BEGIN ************/
 			var doNotBindEventsOnWindowResize = false;
-			jQuery(window).resize(function(){
+			
+			jQuery(
+				window
+			).resize(function(){
 				doNotBindEventsOnWindowResize = true;
 			});
 			
-			if( !doNotBindEventsOnWindowResize ){
+			if( !doNotBindEventsOnWindowResize )
+			{
 				jQuery(
 					this
 				).die(
@@ -202,8 +214,8 @@
 			
 			
 			/************ prepareModalbox - END ************/
-			function prepareModalbox(settings){
-				
+			function prepareModalbox(settings)
+			{
 				
 				var settings = jQuery.extend({// default settings
 					event : null,
@@ -213,7 +225,8 @@
 				}, settings || {} );
 				
 				
-				if( settings.event && settings.element ){
+				if( settings.event && settings.element )
+				{
 					
 					var elementObj = settings.element;
 					var source = '';
@@ -352,112 +365,10 @@
 			
 			
 			
-			/************ ajaxRedirect - BEGIN ************/
-			function ajaxRedirect(settings){
-
-
-				var settings = jQuery.extend({// default settings
-					ar_XMLHttpRequest	: null,
-					ar_textStatus		: null,
-					ar_errorThrown		: null,
-					targetContainer		: null,
-					ar_enableDebugging	: false
-				}, settings || {} );
-				
-				
-				// ~~~~~~~~~ global settings - BEGIN ~~~~~~~~~ //
-				var XMLHttpRequest = settings.ar_XMLHttpRequest;
-				var textStatus = settings.ar_textStatus;
-				var errorThrown = settings.ar_errorThrown;
-				// ~~~~~~~~~ global settings - END ~~~~~~~~~ //
-				
-				
-				if ( XMLHttpRequest && textStatus != "error" ) {
-					
-					if( XMLHttpRequest.status == 403 ){
-						
-						var redirect = XMLHttpRequest.getResponseHeader("Location");
-						if( typeof redirect !== "undefined" ) {
-							location.href = redirect;
-						}
-						
-					} else if ( XMLHttpRequest.status == 500 && settings.targetContainer ){
-						
-						addErrorMessage({
-							errorMessage 	: globaloptions.localizedStrings["errorMessageXMLHttpRequest"],
-							targetContainer	: settings.targetContainer
-						});
-					}
-					
-					if( settings.ar_enableDebugging ){
-						console.log( "XMLHttpRequest.status: " + XMLHttpRequest.status );
-					}
-					
-				} else if ( textStatus == "error" ) {
-					
-					if ( settings.targetContainer ){
-						addErrorMessage({
-							errorMessage 	: globaloptions.localizedStrings["errorMessageTextStatusError"],
-							targetContainer	: settings.targetContainer
-						});
-					}
-					
-					if( settings.ar_enableDebugging ){
-						console.log( "textStatus: " + textStatus );
-					}
-					
-				} else {
-					// no errors
-				}
-				
-				
-				function addErrorMessage(settings){
-
-					var settings = jQuery.extend({// default settings
-						errorMessage 	: null,
-						targetContainer	: null
-					}, settings || {} );
-					
-					if( settings.errorMessage && settings.targetContainer ){
-						
-						var errorMessageContainer = '<div class="simleModalboxErrorBox"><div class="simleModalboxErrorBoxContent">' + 
-							settings.errorMessage + 
-						'</div></div>';
-						
-						jQuery(
-							settings.targetContainer
-						).removeAttr(
-							"style"
-						).html( 
-							errorMessageContainer 
-						);
-						
-						if( jQuery(settings.targetContainer).parents(globaloptions.selectorModalbox).length > 0 ){
-							
-							jQuery(
-								globaloptions.selectorModalBoxAjaxLoader
-							).remove();
-							
-							methods.center({
-								positionLeft : globaloptions.positionLeft,
-								positionTop : globaloptions.positionTop,
-								minimalTopSpacing : globaloptions.minimalTopSpacing,
-								effectType_show_modalBox : globaloptions.effectType_show_modalBox
-							});
-						}
-						
-					}
-				}
-				
-				
-			}
-			/************ ajaxRedirect - END ************/
-			
-			
-			
 			/************ openModalBox - BEGIN ************/
 			function openModalBox(settings){
 			
+				
 				var settings = jQuery.extend({
 					type : null,
 					element : null,
@@ -477,7 +388,6 @@
 				var prepareNameOfImageNoLink = methods.cleanupSelectorName({
 					replaceValue : globaloptions.selectorModalBoxImageNoLink
 				});
-				
 				
 				
 				/* init close events - BEGIN */
@@ -509,9 +419,10 @@
 				}
 				
 				
-				function initCloseEventsOfFadingLayer(){
-					
-					if( !globaloptions.disablingClickToClose && !globaloptions.disablingTheOverlayClickToClose ){
+				function initCloseEventsOfFadingLayer()
+				{
+					if( !globaloptions.disablingClickToClose && !globaloptions.disablingTheOverlayClickToClose )
+					{
 						jQuery(
 							globaloptions.selectorModalBoxFaderLayer
 						).unbind(
@@ -525,7 +436,8 @@
 				
 				
 				
-				function centerModalbox(){
+				function centerModalbox()
+				{
 					methods.center({
 						positionLeft : globaloptions.positionLeft,
 						positionTop : globaloptions.positionTop,
@@ -540,12 +452,39 @@
 				jQuery(
 					globaloptions.selectorModalboxPreCacheContainer
 				).remove();
+					
+					
+				function contentTasksBefore()
+				{
+				
+					showFadingLayer();
+					
+					centerModalbox();
+				
+				}
+					
+					
+				function contentTasksAfter()
+				{
+				
+					showFadingLayer({
+						callFunctionAfterShow : globaloptions.callFunctionAfterShow
+					});
+					
+					
+					if( globaloptions.draggable ){
+						methods.dragBox();
+					}
+					
+					initCloseEvents();
+					
+					initCloseEventsOfFadingLayer();
+				
+				}
 				
 				
-				
-				if( settings.type && globaloptions.callFunctionBeforeShow() ){
-						
-						
+				if( settings.type && globaloptions.callFunctionBeforeShow() )
+				{	
 					if( settings.source ){
 						settings.source = methods.addAjaxUrlParameter({
 							currentURL : settings.source
@@ -607,7 +546,12 @@
 						
 					} else {
 					
-						methods.clean();
+						methods.clean({
+							customClass : settings.setModalboxClassName,
+							customWidth : (
+								globaloptions.setWidthOfModalLayer ? parseInt( globaloptions.setWidthOfModalLayer ) : null
+							)
+						});
 						
 					}
 					/*  create Modalbox first - END */
@@ -618,126 +562,106 @@
 					);
 					
 					
-					var getCurrentContent = function(){
+					contentTasksBefore();
+					
+					
+					/*~~~ Content Preparer / BEGIN ~~~*/
+					switch (settings.type) {
+							
+						case 'static': {
+							
+							jQuery(
+								globaloptions.selectorModalBoxAjaxLoader
+							).hide();
+							
+							modalboxBodyContentContainerbj.html(
+								settings.data
+							);
+							
+							contentTasksAfter();
+							
+							break;
+							
+						} case 'ajax': {
 						
-						switch (settings.type) {
-							
-							case 'static': {
-								
-								jQuery(
-									globaloptions.selectorModalBoxAjaxLoader
-								).hide();
-								
-								modalboxBodyContentContainerbj.html(
-									settings.data
-								);
-								
-								centerModalbox();
-								
-								initCloseEvents();
-								
-								break;
-								
-							} case 'ajax': {
-							
-								jQuery.ajax({
-									type : globaloptions.ajax_type,
-									url	: settings.source,
-									data : settings.data,
-									contentType : globaloptions.ajax_contentType,
-									success	: function(data, textStatus){
-										
-										jQuery(
-											globaloptions.selectorModalBoxAjaxLoader
-										).fadeOut("fast", function(){
-											
-											modalboxBodyContentContainerbj.html(
-												data
-											);
-											
-											centerModalbox();
-											
-											initCloseEvents();
-											
-										});
-										
-									},
-									error : function(XMLHttpRequest, textStatus, errorThrown){
-										ajaxRedirect({ 
-											ar_XMLHttpRequest : XMLHttpRequest,
-											ar_textStatus : textStatus,
-											ar_errorThrown : errorThrown,
-											targetContainer	: globaloptions.selectorModalbox + " " + globaloptions.selectorModalBoxBodyContent
-										});
-									}
-								});
-								
-								break;
-								
-							} case 'image': {
-								
-								jQuery(
-									'<img class="modalBoxImagePreload" src="' + settings.image + '" />'
-								).load(function(response, status, xhr){
+							jQuery.ajax({
+								type : globaloptions.ajax_type,
+								url	: settings.source,
+								data : settings.data,
+								contentType : globaloptions.ajax_contentType,
+								success	: function(data, textStatus){
 									
-									if( status == "error" ) {
+									jQuery(
+										globaloptions.selectorModalBoxAjaxLoader
+									).fadeOut("fast", function(){
 										
-										methods.debugOutput({ 
-											msg : 'Error / ' + xhr.status + ' : ' + xhr.statusText
-										});
+										modalboxBodyContentContainerbj.html(
+											data
+										);
 										
-									} else {
+										contentTasksAfter();
 										
-										var imageObj = jQuery(this);
-										
-										if( settings.imageLink ){
-											
-											imageObj.attr({
-												alt : settings.imageLink
-											}).wrap(
-												'<a class="' + prepareNameOfImageLink + '" href="' + settings.imageLink + '" title="' + settings.imageLink + '"></a>'
-											);
-											
-											jQuery(
-												globaloptions.selectorModalbox + " a" + globaloptions.selectorModalBoxImageLink
-											).die(
-												"click"
-											).live("click", function(event){
-												
-												event.preventDefault();
-												
-												methods.clean();
-												
-												centerModalbox();
-												
-												setTimeout(function(){
-													
-													location.href = settings.imageLink;
-													
-												}, 400 );
-												
-											});
-											
-										} else {
-											imageObj.attr({
-												alt : globaloptions.localizedStrings["messageCloseWindow"],
-												title : globaloptions.localizedStrings["messageCloseWindow"]
-											});
-										}
+									});
+									
+								},
+								error : function(XMLHttpRequest, textStatus, errorThrown){
+									
+									ajaxRedirect({ 
+										ar_XMLHttpRequest : XMLHttpRequest,
+										ar_textStatus : textStatus,
+										ar_errorThrown : errorThrown,
+										targetContainer	: globaloptions.selectorModalbox + " " + globaloptions.selectorModalBoxBodyContent
+									});
+									
+									contentTasksAfter();
+									
+								}
+							});
+							
+							break;
+							
+						} case 'image': {
+							
+							var imageListObj = jQuery(
+								'<img class="modalBoxImagePreload" src="' + settings.image + '" />'
+							);
+							
+							var imageListObjCount = imageListObj.length;
+							
+							var checkCountImagesLoaded = 0;
+							
+							
+							imageListObj.load(function(response, status, xhr){
+								
+								if( status == "error" )
+								{
+									methods.debugOutput({ 
+										msg : 'Error / ' + xhr.status + ' : ' + xhr.statusText
+									});
+									
+								} else {
+									
+									checkCountImagesLoaded++;
+									
+									if( checkCountImagesLoaded == imageListObjCount )
+									{
+										var imageObj = jQuery(
+											this
+										);
 										
 										jQuery(
 											globaloptions.selectorModalBoxAjaxLoader
-										).fadeOut("fast", function(){
-											
+										).fadeOut("slow", function(){
 											
 											modalboxBodyContentContainerbj.html(
 												imageObj
 											);
 											
-											
-											modalboxBodyContentContainerbj.find(
+											var currentImageObject = modalboxBodyContentContainerbj.find(
 												'img.modalBoxImagePreload'
-											).removeClass(
+											);
+											
+											currentImageObject.removeClass(
 												"modalBoxImagePreload"
 											).addClass(
 												settings.imageLink ? 
@@ -745,45 +669,64 @@
 												"modalBoxImageLoadingSuccessful " + prepareNameOfImageNoLink
 											);
 											
+											if( settings.imageLink )
+											{
+												currentImageObject.attr({
+													alt : settings.imageLink
+												}).wrap(
+													'<a class="' + prepareNameOfImageLink + '" href="' + settings.imageLink + '" title="' + settings.imageLink + '"></a>'
+												);
+												
+												jQuery(
+													globaloptions.selectorModalbox + " a" + globaloptions.selectorModalBoxImageLink
+												).die(
+													"click"
+												).live("click", function(event){
+													
+													event.preventDefault();
+													
+													methods.clean();
+													
+													centerModalbox();
+													
+													setTimeout(function(){
+														
+														location.href = settings.imageLink;
+														
+													}, 400 );
+													
+												});
+												
+											} else {
+												
+												currentImageObject.attr({
+													alt : globaloptions.localizedStrings["messageCloseWindow"],
+													title : globaloptions.localizedStrings["messageCloseWindow"]
+												});
+											}
 											
-											centerModalbox();
-											
-											
-											initCloseEvents();
-											
+											contentTasksAfter();
 											
 										});
-										
 									}
-									
-								}).error(function(){
-									
-									methods.debugOutput({ 
-										msg : 'Error / ' + globaloptions.localizedStrings["errorMessageImageLoadingFailed"] 
-									});
-									
+								}
+								
+							}).error(function(){
+								
+								methods.debugOutput({ 
+									msg : 'Error / ' + globaloptions.localizedStrings["errorMessageImageLoadingFailed"] 
 								});
 								
-								break;
+								contentTasksAfter();
 								
-							}
+							});
+							
+							break;
+							
 						}
-						
-						
-						if( globaloptions.draggable ){
-							methods.dragBox();
-						}
-						
-						
-						initCloseEventsOfFadingLayer();
-						
-						
 					}
+					/*~~~ Content Preparer / END ~~~*/
 					
-					
-					showFadingLayer({
-						callFunctionAfterShow : getCurrentContent
-					});
 					
 					
 				}
@@ -803,16 +746,24 @@
 				}, settings || {} );
 				
 				
-				if ( jQuery(globaloptions.selectorModalBoxFaderLayer).length == 0 ) {
+				if( jQuery(globaloptions.selectorModalBoxFaderLayer).length == 0 )
+				{
 					
 					/* append fading container first - BEGIN */
-					if( globaloptions.setTypeOfFadingLayer == "white" ){
+					if( globaloptions.setTypeOfFadingLayer == "white" )
+					{
 						settings.setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["white"];
-					} else if ( globaloptions.setTypeOfFadingLayer == "black" ){
+					} 
+					else if ( globaloptions.setTypeOfFadingLayer == "black" )
+					{
 						settings.setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["black"];
-					} else if ( globaloptions.setTypeOfFadingLayer == "custom" && globaloptions.setStylesOfFadingLayer["custom"] ){
+					} 
+					else if ( globaloptions.setTypeOfFadingLayer == "custom" && globaloptions.setStylesOfFadingLayer["custom"] )
+					{
 						settings.setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["custom"];
-					} else {//globaloptions.setTypeOfFadingLayer == "disable"
+					} 
+					else //globaloptions.setTypeOfFadingLayer == "disable"
+					{
 						settings.setStyleOfFadingLayer = globaloptions.setStylesOfFadingLayer["transparent"];
 					}
 					
@@ -877,7 +828,9 @@
 					
 					
 					jQuery(window).resize(function(){
-						if( getGeneratedFaderObj.is(':visible') ){
+						
+						if( getGeneratedFaderObj.is(':visible') )
+						{
 							methods.center({
 								
 								positionLeft : globaloptions.positionLeft,
@@ -909,6 +862,112 @@
 			/************ showFadingLayer - END ************/
 			
 			
+			
+			/************ ajaxRedirect - BEGIN ************/
+			function ajaxRedirect(settings){
+
+
+				var settings = jQuery.extend({// default settings
+					ar_XMLHttpRequest	: null,
+					ar_textStatus		: null,
+					ar_errorThrown		: null,
+					targetContainer		: null,
+					ar_enableDebugging	: false
+				}, settings || {} );
+				
+				
+				// ~~~~~~~~~ global settings - BEGIN ~~~~~~~~~ //
+				var XMLHttpRequest = settings.ar_XMLHttpRequest;
+				var textStatus = settings.ar_textStatus;
+				var errorThrown = settings.ar_errorThrown;
+				// ~~~~~~~~~ global settings - END ~~~~~~~~~ //
+				
+				
+				if ( XMLHttpRequest && textStatus != "error" ) {
+					
+					if( XMLHttpRequest.status == 403 ){
+						
+						var redirect = XMLHttpRequest.getResponseHeader("Location");
+						if( typeof redirect !== "undefined" ) {
+							location.href = redirect;
+						}
+						
+					} else if ( XMLHttpRequest.status == 500 && settings.targetContainer ){
+						
+						addErrorMessage({
+							errorMessage 	: globaloptions.localizedStrings["errorMessageXMLHttpRequest"],
+							targetContainer	: settings.targetContainer
+						});
+					}
+					
+					if( settings.ar_enableDebugging )
+					{
+						console.log( "XMLHttpRequest.status: " + XMLHttpRequest.status );
+					}
+					
+				} else if ( textStatus == "error" ){
+					
+					if ( settings.targetContainer )
+					{
+						addErrorMessage({
+							errorMessage 	: globaloptions.localizedStrings["errorMessageTextStatusError"],
+							targetContainer	: settings.targetContainer
+						});
+					}
+					
+					if( settings.ar_enableDebugging )
+					{
+						console.log( "textStatus: " + textStatus );
+					}
+					
+				} else {
+					// no errors
+				}
+				
+				
+				function addErrorMessage(settings){
+
+					var settings = jQuery.extend({// default settings
+						errorMessage 	: null,
+						targetContainer	: null
+					}, settings || {} );
+					
+					if( settings.errorMessage && settings.targetContainer ){
+						
+						var errorMessageContainer = '<div class="simleModalboxErrorBox"><div class="simleModalboxErrorBoxContent">' + 
+							settings.errorMessage + 
+						'</div></div>';
+						
+						jQuery(
+							settings.targetContainer
+						).removeAttr(
+							"style"
+						).html( 
+							errorMessageContainer 
+						);
+						
+						if( jQuery(settings.targetContainer).parents(globaloptions.selectorModalbox).length > 0 ){
+							
+							jQuery(
+								globaloptions.selectorModalBoxAjaxLoader
+							).remove();
+							
+							methods.center({
+								positionLeft : globaloptions.positionLeft,
+								positionTop : globaloptions.positionTop,
+								minimalTopSpacing : globaloptions.minimalTopSpacing,
+								effectType_show_modalBox : globaloptions.effectType_show_modalBox
+							});
+						}
+						
+					}
+				}
+				
+				
+			}
+			/************ ajaxRedirect - END ************/
+			
+			
 		},
 		/********** init - END **********/
 		
@@ -928,74 +987,134 @@
 				Example / External:
 				-----------------------------
 				jQuery.fn.modalBox('close');
+				
+				
+				Example / External, remove only:
+				-----------------------------
+				jQuery.fn.modalBox(
+					'close', {
+						removeOnly : true
+					}
+				);
 			*/
 			
 			
+			var settings = jQuery.extend({
+				removeOnly : false
+			}, settings || {} );
+			
+			
 			// merge the plugin defaults with custom settings
-			var settings = jQuery.extend({}, defaults, settings);
+			settings = jQuery.extend({}, defaults, settings);
 			
 			
-			if( settings.selectorModalBoxFaderLayer && settings.selectorModalbox ){
-			
+			if( settings.selectorModalBoxFaderLayer && settings.selectorModalbox )
+			{
+				
 				settings.callFunctionBeforeHide();
 				
-				var containerObj = jQuery(settings.selectorModalBoxFaderLayer + ', ' + settings.selectorModalbox);
 				
-				if( settings.setTypeOfFadingLayer == "disable" ){
-					settings.effectType_hide_fadingLayer[0] = ""; // reset to default
-				}
+				var containerObj = jQuery(
+					settings.selectorModalBoxFaderLayer + ', ' + settings.selectorModalbox
+				);
 				
-				switch ( settings.effectType_hide_fadingLayer[0] ){
-					case 'fade' : {
-						
-						switch ( settings.effectType_hide_modalBox[0] ){
-							case 'fade' : {
-								
-								jQuery(settings.selectorModalbox).fadeOut( settings.effectType_hide_modalBox[1], function(){
-									jQuery(settings.selectorModalBoxFaderLayer).fadeOut( settings.effectType_hide_fadingLayer[1], function(){
-										removeLayer( containerObj );
-									});
-								});
-								
-								break;
-								
-							} default : {
-								
-								jQuery(settings.selectorModalbox).hide();
-								
-								jQuery(settings.selectorModalBoxFaderLayer).fadeOut( settings.effectType_hide_fadingLayer[1], function(){
-									removeLayer( containerObj );
-								});
-								
-								break;
-							}
-						};
-						
-						break;
-						
-					} default : {
-						
-						switch ( settings.effectType_hide_modalBox[0] ){
-							case 'fade' : {
-								
-								jQuery(settings.selectorModalbox).fadeOut( settings.effectType_hide_modalBox[1], function(){
-									removeLayer( containerObj );
-								});
-								
-								break;
-								
-							} default : {
-								
-								removeLayer( containerObj );
-								
-								break;
-							}
-						};
-						
-						break;
+				
+				if( settings.removeOnly )
+				{
+					
+					removeLayer( 
+						containerObj 
+					);
+					
+				} else {
+					
+					
+					// reset to default
+					if( settings.setTypeOfFadingLayer == "disable" )
+					{
+						settings.effectType_hide_fadingLayer[0] = "";
 					}
-				};
-				
+					
+					
+					switch ( settings.effectType_hide_fadingLayer[0] )
+					{
+						case 'fade' : {
+							
+							switch ( settings.effectType_hide_modalBox[0] )
+							{
+								case 'fade' : {
+									
+									jQuery(
+										settings.selectorModalbox
+									).fadeOut( settings.effectType_hide_modalBox[1], function(){
+										
+										jQuery(
+											settings.selectorModalBoxFaderLayer
+										).fadeOut( settings.effectType_hide_fadingLayer[1], function(){
+											
+											removeLayer( 
+												containerObj 
+											);
+											
+										});
+									});
+									
+									break;
+									
+								} default : {
+									
+									jQuery(
+										settings.selectorModalbox
+									).hide();
+									
+									jQuery(
+										settings.selectorModalBoxFaderLayer
+									).fadeOut( settings.effectType_hide_fadingLayer[1], function(){
+										
+										removeLayer( 
+											containerObj 
+										);
+										
+									});
+									
+									break;
+								}
+							};
+							
+							break;
+							
+						} default : {
+							
+							switch ( settings.effectType_hide_modalBox[0] )
+							{
+								case 'fade' : {
+									
+									jQuery(
+										settings.selectorModalbox
+									).fadeOut( settings.effectType_hide_modalBox[1], function(){
+										
+										removeLayer( 
+											containerObj 
+										);
+										
+									});
+									
+									break;
+									
+								} default : {
+									
+									removeLayer( 
+										containerObj 
+									);
+									
+									break;
+								}
+							};
+							
+							break;
+						}
+					};
+				}
 			}
 			
 			
@@ -1039,8 +1158,8 @@
 			);
 			
 			
-			if( jQuery(settings.selectorModalboxPreCacheContainer).length == 0 && modalboxContainerObj.length > 0 ){
-				
+			if( jQuery(settings.selectorModalboxPreCacheContainer).length == 0 && modalboxContainerObj.length > 0 )
+			{
 				
 				var scrollToTop = false;
 				var positionAttr = 'absolute';
@@ -1054,7 +1173,8 @@
 				) / 2;
 				
 				
-				if( jQuery("body a.modalBoxTopLink").length == 0 ){
+				if( jQuery("body a.modalBoxTopLink").length == 0 )
+				{
 					jQuery(
 						"body"
 					).prepend(
@@ -1064,11 +1184,13 @@
 				
 				
 				/*~~~ setPositionLeft / BEGIN ~~~*/
-				if( setPositionLeft <= 0 ){
+				if( setPositionLeft <= 0 )
+				{
 					setPositionLeft = 0;
 				}
 				
-				if( settings.positionLeft ){
+				if( settings.positionLeft )
+				{
 					setPositionLeft = settings.positionLeft + 'px';
 				} else {
 					setPositionLeft = setPositionLeft + 'px';
@@ -1076,15 +1198,16 @@
 				/*~~~ setPositionLeft / END ~~~*/
 				
 				
-				
 				/*~~~ setPositionTop / BEGIN ~~~*/
-				if( settings.positionTop ){
+				if( settings.positionTop )
+				{
 					
 					setPositionTop = parseInt( 
 						jQuery(window).height() - getModalboxContainerHeight
 					);
 					
-					if( setPositionTop > parseInt( settings.positionTop ) ){
+					if( setPositionTop > parseInt( settings.positionTop ) )
+					{
 						positionAttr = 'fixed';
 					}
 					
@@ -1094,8 +1217,8 @@
 					
 					setPositionTop = parseInt( jQuery(window).height() - getModalboxContainerHeight - 70 ) / 2;
 					
-					if( setPositionTop <= 0 ){
-					
+					if( setPositionTop <= 0 )
+					{
 						setPositionTop = settings.minimalTopSpacing + 'px';
 						scrollToTop = true;
 						
@@ -1110,17 +1233,22 @@
 				
 				
 				/*~~~ initLastSteps / BEGIN ~~~*/
-				function initLastSteps(){
+				function initLastSteps()
+				{
 					
-					if( scrollToTop && !modalboxContainerObj.hasClass("modalboxScrollingSuccessfully") ){
-						modalboxContainerObj.addClass("modalboxScrollingSuccessfully");
+					if( scrollToTop && !modalboxContainerObj.hasClass("modalboxScrollingSuccessfully") )
+					{
+						
+						modalboxContainerObj.addClass(
+							"modalboxScrollingSuccessfully"
+						);
+						
 						methods.scrollTo();
 					}
 					
-					if( !settings.isResized ){
-						if( settings.callFunctionAfterShow ){
-							settings.callFunctionAfterShow();
-						}
+					if( !settings.isResized && settings.callFunctionAfterShow )
+					{
+						settings.callFunctionAfterShow();
 					}
 				}
 				/*~~~ initLastSteps / END ~~~*/
@@ -1128,12 +1256,12 @@
 				
 				
 				/*~~~ initPositioning / BEGIN ~~~*/
-				switch( settings.effectType_show_modalBox[0] ){
-					
+				switch( settings.effectType_show_modalBox[0] )
+				{
 					case 'fade' : {
 						
 						if( modalboxContainerObj.hasClass("modalboxFadingSuccessfully") ){
-						
+							
 							modalboxContainerObj.css({
 								position	: positionAttr,
 								left		: setPositionLeft,
@@ -1203,19 +1331,57 @@
 				methods.clean();
 				
 				
+				Example / Internal:
+				-----------------------------
+				methods.clean({
+					customClass : 'myCustomClass',
+					customWidth : 400
+				});
+				
+				
 				Example / External:
 				-----------------------------
-				jQuery.fn.modalBox('close');
+				jQuery.fn.modalBox('clean');
 			*/
 			
-			// merge the plugin defaults with custom settings
-			var settings = jQuery.extend( {}, defaults, settings);
+			var settings = jQuery.extend({
+				customClass : null,
+				customWidth : null // must be integer
+			}, settings || {} );
 			
-			if( settings.selectorModalBoxBodyContent ){
+			
+			// merge the plugin defaults with custom settings
+			settings = jQuery.extend( {}, defaults, settings);
+			
+			
+			if( settings.selectorModalbox && settings.selectorModalBoxBodyContent ){
 				
 				var prepareNameOfAjaxLoader = methods.cleanupSelectorName({
 					replaceValue: settings.selectorModalBoxAjaxLoader
 				});
+				
+				var getModalbox = jQuery(
+					settings.selectorModalbox
+				);
+				
+				
+				if( settings.customClass ){
+					getModalbox.removeClass(
+						getModalbox.attr(
+							"class"
+						)
+					).addClass(
+						settings.customClass
+					);
+				}
+				
+				
+				if( settings.customWidth ){
+					getModalbox.width(
+						customWidth
+					);
+				}
+				
 				
 				jQuery(
 					settings.selectorModalBoxBodyContent
@@ -1655,8 +1821,15 @@
 	
 	
 	jQuery(document).ready(function(){//default Initializing
-		jQuery.fn.modalBox("precache");
-		jQuery(".openmodalbox").modalBox();
+		
+		jQuery.fn.modalBox(
+			"precache"
+		);
+		
+		jQuery(
+			".openmodalbox"
+		).modalBox();
+		
 	});
 	
 	
